@@ -21,6 +21,7 @@ public interface IUserDao extends JpaRepository<UserEntity, UUID> {
     Page<UserEntity> findAll(Pageable pageable);
     @Override
     Optional<UserEntity> findById(UUID uuid);
+    Optional<UserEntity> findByMailAndPassword(String mail, String password);
 
     @Override
     <S extends UserEntity> S save(S entity);
