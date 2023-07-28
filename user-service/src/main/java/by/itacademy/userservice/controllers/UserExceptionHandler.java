@@ -1,12 +1,14 @@
 package by.itacademy.userservice.controllers;
 
-import by.itacademy.userservice.controllers.errors.ErrorMessage;
-import by.itacademy.userservice.controllers.errors.ErrorResponse;
-import by.itacademy.userservice.controllers.errors.StructuredErrorResponse;
+import by.itacademy.userservice.core.errors.ErrorMessage;
+import by.itacademy.userservice.core.errors.ErrorResponse;
+import by.itacademy.userservice.core.errors.StructuredErrorResponse;
 import by.itacademy.userservice.core.enums.ErrorType;
+import by.itacademy.userservice.core.exceptions.FindUserException;
+import by.itacademy.userservice.core.exceptions.UndefinedDBUserException;
 import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -37,11 +39,10 @@ public class UserExceptionHandler {
 
         LOGGER.error(ex.getMessage(), ex);
 
-
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    //    Если в json неверные данные передать в дто
+    //    Если в json неверные данные передать в дто в соответствии с валидацией
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException ex) {
         List<FieldError> errors = ex.getFieldErrors();
@@ -66,9 +67,11 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    //    Если передать неверный тип данных в параметры
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
+    @ExceptionHandler({
+            DataIntegrityViolationException.class,      // Если сработал constraint form db
+            FindUserException.class
+    })
+    public ResponseEntity<?> handleInvalidArgument(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.error);
         response.setMessage(ex.getMessage());
@@ -77,32 +80,26 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // ошибки из базы данных
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<?> handleDBException(RuntimeException ex) {
+    // Если передать неверный тип данных в параметры
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.error);
-        response.setMessage("Internal server Error. Please, contact support!");
+        response.setMessage("Incorrect characters. Change request and try it again!");
         LOGGER.error(ex.getMessage(), ex);
 
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // у меня возникала, когда помечал аннотацией valid параметры в методе сервиса, а не в методе интерфейса сервиса
-    @ExceptionHandler(ConstraintDeclarationException.class)
-    public ResponseEntity<?> handleInvalidArgument(ConstraintDeclarationException ex) {
-        ErrorResponse response = new ErrorResponse(
-                ErrorType.error,
-                "Internal server Error. Please, contact support!"
-        );
-        LOGGER.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
+    // ConstraintDeclarationException возникала, когда помечал аннотацией valid параметры в методе сервиса, а не в методе интерфейса сервиса
     @ExceptionHandler({
+            ConstraintDeclarationException.class,
+            UndefinedDBUserException.class,
             IllegalArgumentException.class,
             IndexOutOfBoundsException.class,
             ArithmeticException.class,
+            IOException.class,
             NullPointerException.class,
             Error.class
     })
@@ -112,7 +109,7 @@ public class UserExceptionHandler {
                 "Internal server Error. Please, contact support!"
         );
         LOGGER.error(ex.getMessage(), ex);
-        return new ResponseEntity<>("ololo" + " " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

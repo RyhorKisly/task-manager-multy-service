@@ -1,4 +1,4 @@
-package by.itacademy.userservice.controllers.errors;
+package by.itacademy.userservice.core.errors;
 
 import by.itacademy.userservice.core.enums.ErrorType;
 
