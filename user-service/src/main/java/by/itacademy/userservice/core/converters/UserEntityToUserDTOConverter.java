@@ -1,4 +1,4 @@
-package by.itacademy.userservice.service.converters;
+package by.itacademy.userservice.core.converters;
 
 import by.itacademy.userservice.core.dto.UserDTO;
 import by.itacademy.userservice.core.enums.UserRole;
