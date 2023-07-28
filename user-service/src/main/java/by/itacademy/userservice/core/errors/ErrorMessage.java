@@ -1,4 +1,4 @@
-package by.itacademy.userservice.controllers.errors;
+package by.itacademy.userservice.core.errors;
 
 public class ErrorMessage {
     private String field;

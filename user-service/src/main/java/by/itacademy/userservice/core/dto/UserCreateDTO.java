@@ -5,6 +5,7 @@ import by.itacademy.userservice.core.enums.UserStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class UserCreateDTO {
     @Email(message = "Email entered incorrectly")
@@ -17,6 +18,8 @@ public class UserCreateDTO {
     @NotNull(message = "Status is mandatory")
     private UserStatus status;
     @NotBlank(message = "Password is mandatory")
+    @Size(min = 4, message = "Password too short")
+    @Size(max = 20, message = "Password too long")
     private String password;
 
     public UserCreateDTO() {

@@ -5,22 +5,22 @@ import by.itacademy.userservice.core.dto.UserCreateDTO;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.repositories.IUserDao;
 import by.itacademy.userservice.service.api.IUserService;
-import jakarta.validation.Valid;
+import by.itacademy.userservice.core.exceptions.FindUserException;
+import by.itacademy.userservice.core.exceptions.UndefinedDBUserException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Optional;
 import java.util.UUID;
 @Service
 @Validated
 public class UserService implements IUserService {
     private static final String ERROR_UPDATE_RESPONSE = "Failed to update user. Try again or contact support!";
-    private static final String ERROR_CREATE_RESPONSE = "Failed to create user. Try again or contact support!";
     private static final String ERROR_GET_RESPONSE = "Failed to get user(s). Try again or contact support!";
-
+    private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
 
     private final IUserDao userDao;
     public UserService(IUserDao userDao) {
@@ -31,10 +31,16 @@ public class UserService implements IUserService {
     public UserEntity save(UserCreateDTO item) {
         UserEntity entity = convertUserCreateDTOToEntity(item);
         entity.setUuid(UUID.randomUUID());
+        entity.setMail(null);
         try {
             return userDao.save(entity);
         } catch (DataAccessException ex) {
-            throw new RuntimeException(ERROR_CREATE_RESPONSE, ex);
+            if(ex.getMessage().contains("users_mail_unique")) {
+                throw new DataIntegrityViolationException("User with this login exists", ex);
+            } else {
+                throw new UndefinedDBUserException(ex.getMessage(), ex);
+        }
+
         }
     }
 
@@ -43,22 +49,27 @@ public class UserService implements IUserService {
         try {
             return userDao.findAll(pageRequest);
         } catch (DataAccessException ex) {
-            throw new RuntimeException(ERROR_GET_RESPONSE, ex);
+            throw new FindUserException(ERROR_GET_RESPONSE, ex);
         }
     }
 
     @Override
     public UserEntity get(UUID uuid) {
             return userDao.findById(uuid)
-                    .orElseThrow(() -> new IllegalArgumentException(ERROR_GET_RESPONSE));
+                    .orElseThrow(() -> new FindUserException(USER_NOT_EXIST_RESPONSE));
+    }
+
+    @Override
+    public void get(String mail, String password) {
+            userDao.findByMailAndPassword(mail, password)
+                    .orElseThrow(() -> new FindUserException("Wrong mail or password"));
     }
 
     @Override
     public void update(UserCreateDTO item, CoordinatesDTO coordinates) {
 
-        Optional<UserEntity> userEntityOpt = userDao.findById(coordinates.getUuid());
-        UserEntity userEntity = userEntityOpt
-                .orElseThrow(() -> new IllegalArgumentException(ERROR_GET_RESPONSE));
+        UserEntity userEntity = userDao.findById(coordinates.getUuid())
+                .orElseThrow(() -> new FindUserException(USER_NOT_EXIST_RESPONSE));
 
         if(userEntity.getDtUpdate().withNano(0)
                 .isEqual(coordinates.getDtUpdate().withNano(0))
@@ -72,14 +83,14 @@ public class UserService implements IUserService {
             try {
                 userDao.save(userEntity);
             } catch (DataAccessException ex) {
-                throw new RuntimeException(ERROR_UPDATE_RESPONSE, ex);
+                throw new UndefinedDBUserException(ex.getMessage(), ex);
             }
         } else {
             throw new IllegalArgumentException(ERROR_UPDATE_RESPONSE);
         }
     }
 
-    private UserEntity convertUserCreateDTOToEntity(@Valid UserCreateDTO item) {
+    private UserEntity convertUserCreateDTOToEntity(UserCreateDTO item) {
         UserEntity entity = new UserEntity();
         entity.setMail(item.getMail());
         entity.setFio(item.getFio());

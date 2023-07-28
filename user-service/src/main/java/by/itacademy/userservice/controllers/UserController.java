@@ -7,9 +7,6 @@ import by.itacademy.userservice.core.dto.UserDTO;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -54,14 +51,13 @@ public class UserController {
     ) {
         Page<UserEntity> pageOfUsers =  userService.get(PageRequest.of(page, size));
         List<UserEntity> userEntities = pageOfUsers.getContent();
-        List<UserDTO> userDTOS = new ArrayList<>();
 
+        List<UserDTO> userDTOS = new ArrayList<>();
         for (UserEntity userEntity : userEntities) {
             userDTOS.add(conversionService.convert(userEntity, UserDTO.class));
         }
 
         PageDTO pageDTO = convertPagetoPageDTO(pageOfUsers, userDTOS);
-
         return new ResponseEntity<>(pageDTO, HttpStatus.OK);
     }
  
@@ -76,16 +72,12 @@ public class UserController {
     @PutMapping("/{uuid}/dt_update/{dt_update}")
     public ResponseEntity<?> update(
             @PathVariable UUID uuid,
-            @PathVariable("dt_update") Long dtUpdate,
+            @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody @Valid UserCreateDTO userCreateDTO
     ) {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
-
-        LocalDateTime localDateTime = Instant.ofEpochMilli(dtUpdate).atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-        coordinatesDTO.setDtUpdate(localDateTime);
-
+        coordinatesDTO.setDtUpdate(dtUpdate);
         userService.update(userCreateDTO, coordinatesDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
