@@ -1,8 +1,19 @@
 package by.itacademy.userservice.core.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+
 public class UserRegistrationDTO {
+    @Email(message = "Email entered incorrectly")
+    @NotBlank(message = "Email is mandatory")
     private String mail;
+    @NotBlank(message = "Fio is mandatory")
     private String fio;
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 4, message = "Password too short")
+    @Size(max = 20, message = "Password too long")
     private String password;
 
     public UserRegistrationDTO() {
