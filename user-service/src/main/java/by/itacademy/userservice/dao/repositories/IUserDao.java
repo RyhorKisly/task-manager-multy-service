@@ -17,13 +17,6 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface IUserDao extends JpaRepository<UserEntity, UUID> {
-    @Override
-    Page<UserEntity> findAll(Pageable pageable);
-    @Override
-    Optional<UserEntity> findById(UUID uuid);
     Optional<UserEntity> findByMailAndPassword(String mail, String password);
-
-    @Override
-    <S extends UserEntity> S save(S entity);
 
 }

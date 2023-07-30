@@ -5,8 +5,8 @@ import by.itacademy.userservice.core.dto.UserCreateDTO;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.repositories.IUserDao;
 import by.itacademy.userservice.service.api.IUserService;
-import by.itacademy.userservice.core.exceptions.FindUserException;
-import by.itacademy.userservice.core.exceptions.UndefinedDBUserException;
+import by.itacademy.userservice.core.exceptions.FindEntityException;
+import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -21,6 +21,9 @@ public class UserService implements IUserService {
     private static final String ERROR_UPDATE_RESPONSE = "Failed to update user. Try again or contact support!";
     private static final String ERROR_GET_RESPONSE = "Failed to get user(s). Try again or contact support!";
     private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
+    private static final String USER_EXIST_RESPONSE = "User with this login exists";
+    private static final String WRONG_REQUEST_RESPONSE = "Wrong mail or password";
+    private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
 
     private final IUserDao userDao;
     public UserService(IUserDao userDao) {
@@ -31,16 +34,14 @@ public class UserService implements IUserService {
     public UserEntity save(UserCreateDTO item) {
         UserEntity entity = convertUserCreateDTOToEntity(item);
         entity.setUuid(UUID.randomUUID());
-        entity.setMail(null);
         try {
             return userDao.save(entity);
         } catch (DataAccessException ex) {
-            if(ex.getMessage().contains("users_mail_unique")) {
-                throw new DataIntegrityViolationException("User with this login exists", ex);
+            if(ex.getMessage().contains(NAME_MAIL_CONSTRAINT)) {
+                throw new DataIntegrityViolationException(USER_EXIST_RESPONSE, ex);
             } else {
-                throw new UndefinedDBUserException(ex.getMessage(), ex);
-        }
-
+                throw new UndefinedDBEntityException(ex.getMessage(), ex);
+            }
         }
     }
 
@@ -49,27 +50,27 @@ public class UserService implements IUserService {
         try {
             return userDao.findAll(pageRequest);
         } catch (DataAccessException ex) {
-            throw new FindUserException(ERROR_GET_RESPONSE, ex);
+            throw new FindEntityException(ERROR_GET_RESPONSE, ex);
         }
     }
 
     @Override
     public UserEntity get(UUID uuid) {
             return userDao.findById(uuid)
-                    .orElseThrow(() -> new FindUserException(USER_NOT_EXIST_RESPONSE));
+                    .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
     }
 
     @Override
     public void get(String mail, String password) {
             userDao.findByMailAndPassword(mail, password)
-                    .orElseThrow(() -> new FindUserException("Wrong mail or password"));
+                    .orElseThrow(() -> new FindEntityException(WRONG_REQUEST_RESPONSE));
     }
 
     @Override
     public void update(UserCreateDTO item, CoordinatesDTO coordinates) {
 
         UserEntity userEntity = userDao.findById(coordinates.getUuid())
-                .orElseThrow(() -> new FindUserException(USER_NOT_EXIST_RESPONSE));
+                .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
 
         if(userEntity.getDtUpdate().withNano(0)
                 .isEqual(coordinates.getDtUpdate().withNano(0))
@@ -83,7 +84,7 @@ public class UserService implements IUserService {
             try {
                 userDao.save(userEntity);
             } catch (DataAccessException ex) {
-                throw new UndefinedDBUserException(ex.getMessage(), ex);
+                throw new UndefinedDBEntityException(ex.getMessage(), ex);
             }
         } else {
             throw new IllegalArgumentException(ERROR_UPDATE_RESPONSE);

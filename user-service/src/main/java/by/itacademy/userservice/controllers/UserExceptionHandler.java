@@ -4,9 +4,7 @@ import by.itacademy.userservice.core.errors.ErrorMessage;
 import by.itacademy.userservice.core.errors.ErrorResponse;
 import by.itacademy.userservice.core.errors.StructuredErrorResponse;
 import by.itacademy.userservice.core.enums.ErrorType;
-import by.itacademy.userservice.core.exceptions.FindUserException;
-import by.itacademy.userservice.core.exceptions.UndefinedDBUserException;
-import jakarta.validation.ConstraintDeclarationException;
+import by.itacademy.userservice.core.exceptions.FindEntityException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +66,7 @@ public class UserExceptionHandler {
 
     @ExceptionHandler({
             DataIntegrityViolationException.class,      // Если сработал constraint form db
-            FindUserException.class
+            FindEntityException.class
     })
     public ResponseEntity<?> handleInvalidArgument(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
@@ -92,18 +89,10 @@ public class UserExceptionHandler {
     }
 
 
-    // ConstraintDeclarationException возникала, когда помечал аннотацией valid параметры в методе сервиса, а не в методе интерфейса сервиса
     @ExceptionHandler({
-            ConstraintDeclarationException.class,
-            UndefinedDBUserException.class,
-            IllegalArgumentException.class,
-            IndexOutOfBoundsException.class,
-            ArithmeticException.class,
-            IOException.class,
-            NullPointerException.class,
-            Error.class
+            Exception.class
     })
-    public ResponseEntity<?> handleInnerError(RuntimeException ex) {
+    public ResponseEntity<?> handleInnerError(Exception ex) {
         ErrorResponse response = new ErrorResponse(
                 ErrorType.error,
                 "Internal server Error. Please, contact support!"

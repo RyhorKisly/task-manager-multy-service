@@ -16,9 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO> getPages(
+    public ResponseEntity<PageDTO<UserDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
     ) {
@@ -57,7 +55,7 @@ public class UserController {
             userDTOS.add(conversionService.convert(userEntity, UserDTO.class));
         }
 
-        PageDTO pageDTO = convertPagetoPageDTO(pageOfUsers, userDTOS);
+        PageDTO<UserDTO> pageDTO = convertPagetoPageDTO(pageOfUsers, userDTOS);
         return new ResponseEntity<>(pageDTO, HttpStatus.OK);
     }
  
@@ -82,11 +80,11 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private PageDTO convertPagetoPageDTO(
+    private PageDTO<UserDTO> convertPagetoPageDTO(
             Page<UserEntity> pageOfUsers,
             List<UserDTO> userDTOS
     ) {
-        PageDTO pageDTO = new PageDTO();
+        PageDTO<UserDTO> pageDTO = new PageDTO<>();
         pageDTO.setNumber(pageOfUsers.getNumber());
         pageDTO.setSize(pageOfUsers.getSize());
         pageDTO.setTotalPage(pageOfUsers.getTotalPages());
