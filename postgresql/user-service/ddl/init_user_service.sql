@@ -19,5 +19,6 @@ CREATE TABLE app."users"
     status text NOT NULL,
     password text NOT NULL,
     PRIMARY KEY (uuid),
+    CONSTRAINT users_uuid_unique UNIQUE (uuid),
     CONSTRAINT users_mail_unique UNIQUE (mail)
 );

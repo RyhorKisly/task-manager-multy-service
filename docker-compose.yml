@@ -5,8 +5,8 @@ services:
     image: taskmanager_postgresql:1.0.0
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     networks:
       - taskmanager_ntwrk
   pgadmin:
@@ -14,7 +14,7 @@ services:
     image: taskmanager_pgadmin:1.0.0
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_EMAIL: digrikis@mail.ru
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "82:80"
@@ -30,7 +30,7 @@ services:
 
   user-service:
     build: user-service
-    image: taskmanager_user-service:1.0.0
+    image: taskmanager_user-service:1.0.1
     networks:
       - taskmanager_ntwrk
 
