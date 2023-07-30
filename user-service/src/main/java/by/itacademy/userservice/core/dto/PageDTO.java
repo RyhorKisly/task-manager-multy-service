@@ -2,7 +2,7 @@ package by.itacademy.userservice.core.dto;
 
 import java.util.List;
 
-public class PageDTO {
+public class PageDTO<T> {
     private Integer number;
     private Integer size;
     private Integer totalPage;
@@ -10,7 +10,7 @@ public class PageDTO {
     private boolean first;
     private Integer numberOfElements;
     private boolean last;
-    private List<UserDTO> content;
+    private List<T> content;
 
     public PageDTO() {
     }
@@ -23,7 +23,7 @@ public class PageDTO {
             boolean first,
             Integer numberOfElements,
             boolean last,
-            List<UserDTO> content
+            List<T> content
     ) {
         this.number = number;
         this.size = size;
@@ -91,11 +91,11 @@ public class PageDTO {
         this.last = last;
     }
 
-    public List<UserDTO> getContent() {
+    public List<T> getContent() {
         return content;
     }
 
-    public void setContent(List<UserDTO> content) {
+    public void setContent(List<T> content) {
         this.content = content;
     }
 }
