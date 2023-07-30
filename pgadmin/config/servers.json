@@ -4,7 +4,7 @@
       "Name": "TaskManager DB",
       "Group": "Server Group 1",
       "Port": 5432,
-      "Username": "root",
+      "Username": "postgres",
       "Host": "db",
       "SSLMode": "prefer",
       "MaintenanceDB": "postgres"
