@@ -28,7 +28,7 @@ public class PageToPageDTOConverter implements Converter<Page<AuditEntity>, Page
             auditDTO.setUser(userDTO);
             auditDTO.setText(entity.getText());
             auditDTO.setType(EssenceType.valueOf(entity.getType()));
-            auditDTO.setId(auditDTO.getId());
+            auditDTO.setId(entity.getId());
             auditDTOS.add(auditDTO);
         }
 
