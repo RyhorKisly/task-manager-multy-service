@@ -1,9 +1,6 @@
 package by.itacademy.userservice.controllers;
 
-import by.itacademy.userservice.core.dto.CoordinatesDTO;
-import by.itacademy.userservice.core.dto.PageDTO;
-import by.itacademy.userservice.core.dto.UserCreateDTO;
-import by.itacademy.userservice.core.dto.UserDTO;
+import by.itacademy.userservice.core.dto.*;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
@@ -17,8 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 @Validated
 @RestController
@@ -48,14 +43,7 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
     ) {
         Page<UserEntity> pageOfUsers =  userService.get(PageRequest.of(page, size));
-        List<UserEntity> userEntities = pageOfUsers.getContent();
-
-        List<UserDTO> userDTOS = new ArrayList<>();
-        for (UserEntity userEntity : userEntities) {
-            userDTOS.add(conversionService.convert(userEntity, UserDTO.class));
-        }
-
-        PageDTO<UserDTO> pageDTO = convertPagetoPageDTO(pageOfUsers, userDTOS);
+        PageDTO<UserDTO> pageDTO = conversionService.convert(pageOfUsers, PageDTO.class);
         return new ResponseEntity<>(pageDTO, HttpStatus.OK);
     }
  
@@ -80,20 +68,4 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private PageDTO<UserDTO> convertPagetoPageDTO(
-            Page<UserEntity> pageOfUsers,
-            List<UserDTO> userDTOS
-    ) {
-        PageDTO<UserDTO> pageDTO = new PageDTO<>();
-        pageDTO.setNumber(pageOfUsers.getNumber());
-        pageDTO.setSize(pageOfUsers.getSize());
-        pageDTO.setTotalPage(pageOfUsers.getTotalPages());
-        pageDTO.setTotalElements(pageOfUsers.getTotalElements());
-        pageDTO.setFirst(pageOfUsers.isFirst());
-        pageDTO.setNumberOfElements(pageOfUsers.getNumberOfElements());
-        pageDTO.setLast(pageOfUsers.isLast());
-        pageDTO.setContent(userDTOS);
-
-        return pageDTO;
-    }
 }
