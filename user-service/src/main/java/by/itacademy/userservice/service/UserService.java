@@ -1,12 +1,17 @@
 package by.itacademy.userservice.service;
 
 import by.itacademy.userservice.core.dto.CoordinatesDTO;
+import by.itacademy.userservice.core.dto.UserSendDTO;
 import by.itacademy.userservice.core.dto.UserCreateDTO;
+import by.itacademy.userservice.core.enums.UserRole;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.repositories.IUserDao;
 import by.itacademy.userservice.service.api.IUserService;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
+import by.itacademy.userservice.service.feign.AuditServiceClient;
+import jakarta.validation.ConstraintDeclarationException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -24,10 +29,14 @@ public class UserService implements IUserService {
     private static final String USER_EXIST_RESPONSE = "User with this login exists";
     private static final String WRONG_REQUEST_RESPONSE = "Wrong mail or password";
     private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
-
     private final IUserDao userDao;
-    public UserService(IUserDao userDao) {
+    private final AuditServiceClient auditServiceClient;
+    public UserService(
+            IUserDao userDao,
+            AuditServiceClient auditServiceClient
+    ) {
         this.userDao = userDao;
+        this.auditServiceClient = auditServiceClient;
     }
 
     @Override
@@ -35,13 +44,33 @@ public class UserService implements IUserService {
         UserEntity entity = convertUserCreateDTOToEntity(item);
         entity.setUuid(UUID.randomUUID());
         try {
-            return userDao.save(entity);
+            entity = userDao.save(entity);
+
+            UserSendDTO userSendDTO = new UserSendDTO();
+            //user, который произвёл операцию
+            userSendDTO.setUuid(UUID.randomUUID());
+            userSendDTO.setMail("digrikismail.ru");
+            userSendDTO.setFio("fio");
+            userSendDTO.setRole(UserRole.ADMIN);
+            userSendDTO.setType("USER");
+
+            //остальные данные сообщение и id того кто произвёл операцию
+            userSendDTO.setText("User: " + item.getMail() + " was created by: " +  userSendDTO.getMail());
+            userSendDTO.setId(userSendDTO.getUuid().toString());
+            auditServiceClient.sendAudit(userSendDTO);
+
+            return entity;
+
         } catch (DataAccessException ex) {
-            if(ex.getMessage().contains(NAME_MAIL_CONSTRAINT)) {
+            if (ex.getMessage().contains(NAME_MAIL_CONSTRAINT)) {
                 throw new DataIntegrityViolationException(USER_EXIST_RESPONSE, ex);
             } else {
                 throw new UndefinedDBEntityException(ex.getMessage(), ex);
             }
+        } catch (ConstraintViolationException ex) {
+            throw new ConstraintViolationException(ex.getConstraintViolations());
+        } catch (RuntimeException ex) {
+            throw new RuntimeException (ex.getMessage(), ex);
         }
     }
 

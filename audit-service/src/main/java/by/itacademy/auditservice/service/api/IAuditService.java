@@ -10,5 +10,4 @@ import java.util.UUID;
 public interface IAuditService {
     Page<AuditEntity> get(PageRequest pageRequest);
     AuditEntity get(UUID uuid);
-    void save(AuditDTO auditDTO);
 }

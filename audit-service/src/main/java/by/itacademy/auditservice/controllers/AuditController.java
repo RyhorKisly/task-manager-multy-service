@@ -49,13 +49,5 @@ public class AuditController {
         return new ResponseEntity<>(auditDTO, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<?> save(
-            @RequestBody @Valid AuditDTO auditDTO
-    ) {
-        auditService.save(auditDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
 
 }

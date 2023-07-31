@@ -38,27 +38,6 @@ public class AuditService implements IAuditService {
                 .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
     }
 
-    @Override
-    public void save(AuditDTO item) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUuid(UUID.randomUUID());
-        userEntity.setMail(item.getUser().getMail());
-        userEntity.setFio(item.getUser().getFio());
-        userEntity.setRole(item.getUser().getRole().name());
-
-        AuditEntity entity = new AuditEntity();
-        entity.setUuid(UUID.randomUUID());
-        entity.setUser(userEntity);
-        entity.setText(item.getText());
-        entity.setType(item.getType().name());
-        entity.setId(item.getId());
-
-        try{
-            IAuditDao.save(entity);
-        } catch (DataAccessException ex) {
-            throw new UndefinedDBEntityException(ex.getMessage(), ex);
-        }
-    }
 }
 
 
