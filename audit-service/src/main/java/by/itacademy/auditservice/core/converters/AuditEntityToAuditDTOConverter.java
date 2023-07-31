@@ -23,7 +23,7 @@ public class AuditEntityToAuditDTOConverter implements Converter<AuditEntity, Au
         auditDTO.setUser(userDTO);
         auditDTO.setText(entity.getText());
         auditDTO.setType(EssenceType.valueOf(entity.getType()));
-        auditDTO.setId(auditDTO.getId());
+        auditDTO.setId(entity.getId());
 ;
         return auditDTO;
     }
