@@ -18,7 +18,17 @@ CREATE TABLE app."users"
     role text NOT NULL,
     status text NOT NULL,
     password text NOT NULL,
-    PRIMARY KEY (uuid),
-    CONSTRAINT users_uuid_unique UNIQUE (uuid),
+    CONSTRAINT users_pkey PRIMARY KEY (uuid),
     CONSTRAINT users_mail_unique UNIQUE (mail)
 );
+
+CREATE TABLE IF NOT EXISTS app.verification
+(
+    uuid uuid NOT NULL,
+    token uuid NOT NULL,
+    user_uuid uuid NOT NULL,
+    dt_create timestamp without time zone NOT NULL,
+    CONSTRAINT verification_pkey PRIMARY KEY (uuid),
+    CONSTRAINT verification_users_uuid_fkey FOREIGN KEY (user_uuid)
+        REFERENCES app.users (uuid)
+)
