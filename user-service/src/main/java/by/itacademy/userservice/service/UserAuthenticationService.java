@@ -6,7 +6,7 @@ import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
 import by.itacademy.userservice.dao.entity.UserEntity;
-import by.itacademy.userservice.dao.entity.VerificationToken;
+import by.itacademy.userservice.dao.entity.VerificationTokenEntity;
 import by.itacademy.userservice.service.api.IEmailService;
 import by.itacademy.userservice.service.api.IUserAuthenticationService;
 import by.itacademy.userservice.service.api.IUserService;
@@ -34,7 +34,7 @@ public class UserAuthenticationService implements IUserAuthenticationService {
     @Override
     public void registerUser(UserRegistrationDTO item) {
         UserEntity userEntity = createAndSaveUser(item);
-        VerificationToken token = tokenService.save(createToken(userEntity));
+        VerificationTokenEntity token = tokenService.save(createToken(userEntity));
 
         emailService.sendEmail(userEntity, token);
     }
@@ -42,7 +42,7 @@ public class UserAuthenticationService implements IUserAuthenticationService {
     @Override
     public void verifyUser(String code, String mail) {
         UserEntity userEntity = userService.get(mail);
-        VerificationToken token = tokenService.get(UUID.fromString(code));
+        VerificationTokenEntity token = tokenService.get(UUID.fromString(code));
 
         if(userEntity.getMail().equals(token.getUser().getMail())) {
             userEntity.setStatus(UserStatus.ACTIVATED.name());
@@ -69,8 +69,8 @@ public class UserAuthenticationService implements IUserAuthenticationService {
         return userService.save(userCreateDTO);
     }
 
-    private VerificationToken createToken(UserEntity item) {
-        VerificationToken token = new VerificationToken();
+    private VerificationTokenEntity createToken(UserEntity item) {
+        VerificationTokenEntity token = new VerificationTokenEntity();
         token.setUuid(UUID.randomUUID());
         token.setToken(UUID.randomUUID());
         token.setUser(item);
