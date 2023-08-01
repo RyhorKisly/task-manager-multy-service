@@ -14,8 +14,9 @@ spring:
 #    hibernate:
 #      ddl-auto: create
 
-#  config:
-#    import: confidential.yml
+  config:
+    import: confidential.yml
+
 
 logging:
   level:
