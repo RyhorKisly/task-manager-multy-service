@@ -15,8 +15,10 @@ public interface IUserService {
     UserEntity save(@Valid UserCreateDTO userCreateDTO);
     Page<UserEntity> get(PageRequest pageRequest);
     UserEntity get(UUID uuid);
-    void get(String mail, String password);
+    UserEntity get(String mail, String password);
+    UserEntity get(String mail);
     void update(@Valid UserCreateDTO userCreateDTO, CoordinatesDTO coordinatesDTO);
+    void update(@Valid UserEntity userEntity);
 
 
 }
