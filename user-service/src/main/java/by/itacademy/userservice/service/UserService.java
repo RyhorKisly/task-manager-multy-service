@@ -10,7 +10,6 @@ import by.itacademy.userservice.service.api.IUserService;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
 import by.itacademy.userservice.service.feign.AuditServiceClient;
-import jakarta.validation.ConstraintDeclarationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,7 +26,8 @@ public class UserService implements IUserService {
     private static final String ERROR_GET_RESPONSE = "Failed to get user(s). Try again or contact support!";
     private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
     private static final String USER_EXIST_RESPONSE = "User with this login exists";
-    private static final String WRONG_REQUEST_RESPONSE = "Wrong mail or password";
+    private static final String WRONG_REQUEST_MAIL_PASSWORD = "Wrong mail or password";
+    private static final String WRONG_REQUEST_MAIL = "Wrong mail";
     private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
     private final IUserDao userDao;
     private final AuditServiceClient auditServiceClient;
@@ -49,7 +49,7 @@ public class UserService implements IUserService {
             UserSendDTO userSendDTO = new UserSendDTO();
             //user, который произвёл операцию
             userSendDTO.setUuid(UUID.randomUUID());
-            userSendDTO.setMail("digrikismail.ru");
+            userSendDTO.setMail("digrikis@mail.ru");
             userSendDTO.setFio("fio");
             userSendDTO.setRole(UserRole.ADMIN);
             userSendDTO.setType("USER");
@@ -59,19 +59,17 @@ public class UserService implements IUserService {
             userSendDTO.setId(userSendDTO.getUuid().toString());
             auditServiceClient.sendAudit(userSendDTO);
 
-            return entity;
-
         } catch (DataAccessException ex) {
             if (ex.getMessage().contains(NAME_MAIL_CONSTRAINT)) {
                 throw new DataIntegrityViolationException(USER_EXIST_RESPONSE, ex);
             } else {
                 throw new UndefinedDBEntityException(ex.getMessage(), ex);
             }
-        } catch (ConstraintViolationException ex) {
-            throw new ConstraintViolationException(ex.getConstraintViolations());
         } catch (RuntimeException ex) {
             throw new RuntimeException (ex.getMessage(), ex);
         }
+
+        return entity;
     }
 
     @Override
@@ -90,9 +88,15 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void get(String mail, String password) {
-            userDao.findByMailAndPassword(mail, password)
-                    .orElseThrow(() -> new FindEntityException(WRONG_REQUEST_RESPONSE));
+    public UserEntity get(String mail, String password) {
+            return userDao.findByMailAndPassword(mail, password)
+                    .orElseThrow(() -> new FindEntityException(WRONG_REQUEST_MAIL_PASSWORD));
+    }
+
+    @Override
+    public UserEntity get(String mail) {
+        return userDao.findByMail(mail)
+                .orElseThrow(() -> new FindEntityException(WRONG_REQUEST_MAIL));
     }
 
     @Override
@@ -119,6 +123,16 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException(ERROR_UPDATE_RESPONSE);
         }
     }
+
+    @Override
+    public void update(UserEntity userEntity) {
+        try {
+            userDao.save(userEntity);
+        } catch (DataAccessException ex) {
+            throw new UndefinedDBEntityException(ex.getMessage(), ex);
+        }
+    }
+
 
     private UserEntity convertUserCreateDTOToEntity(UserCreateDTO item) {
         UserEntity entity = new UserEntity();

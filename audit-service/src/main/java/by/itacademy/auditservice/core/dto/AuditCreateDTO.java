@@ -1,7 +1,7 @@
 package by.itacademy.auditservice.core.dto;
 
 import by.itacademy.auditservice.core.enums.UserRole;
-import jakarta.validation.constraints.Email;
+import by.itacademy.auditservice.core.validatiors.annotations.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 public class AuditCreateDTO {
     @NotNull(message = "Uuid is mandatory")
     private UUID uuid;
-    @Email(message = "Email entered incorrectly")
+    @ValidEmail
     @NotBlank(message = "Email is mandatory")
     private String mail;
     @NotBlank(message = "Fio is mandatory")

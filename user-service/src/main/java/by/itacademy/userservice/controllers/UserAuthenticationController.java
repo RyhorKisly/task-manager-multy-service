@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Validated
 @RestController
 public class UserAuthenticationController {
@@ -28,24 +30,22 @@ public class UserAuthenticationController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @GetMapping("/users/verification")
+    public ResponseEntity<?> verify(
+            @RequestParam String code,
+            @RequestParam @Email String mail
+    ) {
+        userAuthenticationService.verifyUser(code, mail);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+//TODO Доделать методы
     @PostMapping("/users/login")
     public ResponseEntity<?> authorize(
             @RequestBody @Valid UserLoginDTO userLoginDTO
             ) {
         userAuthenticationService.authorizeUser(userLoginDTO);
         return new ResponseEntity<>("Logged in", HttpStatus.OK);
-    }
-
-
-
-//TODO доделать методы
-    @GetMapping("/users/verification")
-    public ResponseEntity<?> verify(
-            @RequestParam String code,
-            @RequestParam @Email String mail
-    ) {
-
-        return new ResponseEntity<>("Недоработан", HttpStatus.OK);
     }
 
     @GetMapping("/users/me")

@@ -1,12 +1,13 @@
 package by.itacademy.userservice.core.dto;
 
+import by.itacademy.userservice.core.validatiors.annotations.ValidEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 
 public class UserRegistrationDTO {
-    @Email(message = "Email entered incorrectly")
+    @ValidEmail
     @NotBlank(message = "Email is mandatory")
     private String mail;
     @NotBlank(message = "Fio is mandatory")

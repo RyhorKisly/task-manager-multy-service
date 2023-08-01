@@ -6,36 +6,75 @@ import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
 import by.itacademy.userservice.dao.entity.UserEntity;
+import by.itacademy.userservice.dao.entity.VerificationTokenEntity;
+import by.itacademy.userservice.service.api.IEmailService;
 import by.itacademy.userservice.service.api.IUserAuthenticationService;
 import by.itacademy.userservice.service.api.IUserService;
-import org.springframework.dao.DataIntegrityViolationException;
+import by.itacademy.userservice.service.api.IVerificationTokenService;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserAuthenticationService implements IUserAuthenticationService {
     private final IUserService userService;
+    private final IVerificationTokenService tokenService;
+    private final IEmailService emailService;
 
-    public UserAuthenticationService(IUserService userService) {
+    public UserAuthenticationService(
+            IUserService userService,
+            IVerificationTokenService tokenService,
+            IEmailService emailService
+    ) {
         this.userService = userService;
+        this.tokenService = tokenService;
+        this.emailService = emailService;
     }
 
     @Override
-    public void registerUser(UserRegistrationDTO userRegistrationDTO) {
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
-        userCreateDTO.setMail(userRegistrationDTO.getMail());
-        userCreateDTO.setFio(userRegistrationDTO.getFio());
-        userCreateDTO.setPassword(userRegistrationDTO.getPassword());
-        userCreateDTO.setRole(UserRole.USER);
-        userCreateDTO.setStatus(UserStatus.WAITING_ACTIVATION);
+    public void registerUser(UserRegistrationDTO item) {
+        UserEntity userEntity = createAndSaveUser(item);
+        VerificationTokenEntity token = tokenService.save(createToken(userEntity));
 
-        userService.save(userCreateDTO);
-
-//      TODO нужно отправить письмо на почту этого юзера для подтверждения регистрации
+        emailService.sendEmail(userEntity, token);
     }
 
+    @Override
+    public void verifyUser(String code, String mail) {
+        UserEntity userEntity = userService.get(mail);
+        VerificationTokenEntity token = tokenService.get(UUID.fromString(code));
+
+        if(userEntity.getMail().equals(token.getUser().getMail())) {
+            userEntity.setStatus(UserStatus.ACTIVATED.name());
+            userService.update(userEntity);
+            tokenService.delete(token.getUuid());
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    //TODO Доделать метод
     @Override
     public void authorizeUser(UserLoginDTO userLoginDTO) {
-        userService.get(userLoginDTO.getMail(), userLoginDTO.getPassword());
+        UserEntity userEntity = userService.get(userLoginDTO.getMail(), userLoginDTO.getPassword());
+    }
+
+    private UserEntity createAndSaveUser(UserRegistrationDTO item) {
+        UserCreateDTO userCreateDTO = new UserCreateDTO();
+        userCreateDTO.setMail(item.getMail());
+        userCreateDTO.setFio(item.getFio());
+        userCreateDTO.setPassword(item.getPassword());
+        userCreateDTO.setRole(UserRole.USER);
+        userCreateDTO.setStatus(UserStatus.WAITING_ACTIVATION);
+        return userService.save(userCreateDTO);
+    }
+
+    private VerificationTokenEntity createToken(UserEntity item) {
+        VerificationTokenEntity token = new VerificationTokenEntity();
+        token.setUuid(UUID.randomUUID());
+        token.setToken(UUID.randomUUID());
+        token.setUser(item);
+        return token;
     }
 
 }
