@@ -3,8 +3,10 @@ package by.itacademy.userservice.controllers;
 import by.itacademy.userservice.core.dto.*;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,12 +23,15 @@ import java.util.UUID;
 public class UserController {
     private final IUserService userService;
     private final ConversionService conversionService;
+    private final ApplicationEventPublisher eventPublisher;
     public UserController(
             IUserService userService,
-            ConversionService conversionService
+            ConversionService conversionService,
+            ApplicationEventPublisher eventPublisher
     ) {
         this.userService = userService;
         this.conversionService = conversionService;
+        this.eventPublisher = eventPublisher;
     }
 
     @PostMapping
