@@ -1,11 +1,11 @@
 package by.itacademy.userservice.service.api;
 
-import by.itacademy.userservice.dao.entity.VerificationToken;
+import by.itacademy.userservice.dao.entity.VerificationTokenEntity;
 
 import java.util.UUID;
 
 public interface IVerificationTokenService {
-    VerificationToken get(UUID token);
-    VerificationToken save(VerificationToken token);
+    VerificationTokenEntity get(UUID token);
+    VerificationTokenEntity save(VerificationTokenEntity token);
     void delete(UUID token);
 }

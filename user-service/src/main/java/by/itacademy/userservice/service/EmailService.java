@@ -1,9 +1,8 @@
 package by.itacademy.userservice.service;
 
 import by.itacademy.userservice.dao.entity.UserEntity;
-import by.itacademy.userservice.dao.entity.VerificationToken;
+import by.itacademy.userservice.dao.entity.VerificationTokenEntity;
 import by.itacademy.userservice.service.api.IEmailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -20,7 +19,7 @@ public class EmailService implements IEmailService {
 
     @Override
     @Async
-    public void sendEmail(UserEntity item, VerificationToken token) {
+    public void sendEmail(UserEntity item, VerificationTokenEntity token) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(item.getMail());
         mailMessage.setSubject("Complete Registration!");

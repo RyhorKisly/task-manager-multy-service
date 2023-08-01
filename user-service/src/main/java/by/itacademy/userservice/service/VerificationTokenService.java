@@ -2,7 +2,7 @@ package by.itacademy.userservice.service;
 
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
-import by.itacademy.userservice.dao.entity.VerificationToken;
+import by.itacademy.userservice.dao.entity.VerificationTokenEntity;
 import by.itacademy.userservice.dao.repositories.IVerificationDao;
 import by.itacademy.userservice.service.api.IVerificationTokenService;
 import org.springframework.dao.DataAccessException;
@@ -21,13 +21,13 @@ public class VerificationTokenService implements IVerificationTokenService {
     }
 
     @Override
-    public VerificationToken get(UUID token) {
+    public VerificationTokenEntity get(UUID token) {
         return verificationDao.findByToken(token)
                 .orElseThrow(() -> new FindEntityException(WRONG_REQUEST_TOKEN));
     }
 
     @Override
-    public VerificationToken save(VerificationToken token) {
+    public VerificationTokenEntity save(VerificationTokenEntity token) {
         try {
             verificationDao.save(token);
         } catch (DataAccessException ex) {
