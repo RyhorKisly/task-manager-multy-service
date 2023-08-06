@@ -1,40 +1,31 @@
 package by.itacademy.userservice.core.dto;
 
 import by.itacademy.userservice.core.enums.UserRole;
-import jakarta.validation.constraints.Email;
+import by.itacademy.userservice.core.validatiors.annotations.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public class UserSendDTO {
+public class UserShortDTO {
+    @NotNull(message = "Uuid is mandatory")
     private UUID uuid;
+    @ValidEmail
+    @NotBlank(message = "Email is mandatory")
     private String mail;
+    @NotBlank(message = "Fio is mandatory")
     private String fio;
+    @NotNull(message = "Role is mandatory")
     private UserRole role;
-    private String text;
-    private String type;
-    private String id;
 
-    public UserSendDTO() {
+    public UserShortDTO() {
     }
 
-    public UserSendDTO(
-            UUID uuid,
-            String mail,
-            String fio,
-            UserRole role,
-            String text,
-            String type,
-            String id
-    ) {
+    public UserShortDTO(UUID uuid, String mail, String fio, UserRole role) {
         this.uuid = uuid;
         this.mail = mail;
         this.fio = fio;
         this.role = role;
-        this.text = text;
-        this.type = type;
-        this.id = id;
     }
 
     public UUID getUuid() {
@@ -67,29 +58,5 @@ public class UserSendDTO {
 
     public void setRole(UserRole role) {
         this.role = role;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

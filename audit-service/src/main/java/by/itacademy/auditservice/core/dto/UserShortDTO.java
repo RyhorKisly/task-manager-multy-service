@@ -2,19 +2,27 @@ package by.itacademy.auditservice.core.dto;
 
 
 import by.itacademy.auditservice.core.enums.UserRole;
+import by.itacademy.auditservice.core.validatiors.annotations.ValidEmail;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public class UserDTO {
+public class UserShortDTO {
+    @NotNull(message = "Uuid is mandatory")
     private UUID uuid;
+    @ValidEmail
+    @NotBlank(message = "Email is mandatory")
     private String mail;
+    @NotBlank(message = "Fio is mandatory")
     private String fio;
+    @NotNull(message = "Role is mandatory")
     private UserRole role;
 
-    public UserDTO() {
+    public UserShortDTO() {
     }
 
-    public UserDTO(UUID uuid, String mail, String fio, UserRole role) {
+    public UserShortDTO(UUID uuid, String mail, String fio, UserRole role) {
         this.uuid = uuid;
         this.mail = mail;
         this.fio = fio;

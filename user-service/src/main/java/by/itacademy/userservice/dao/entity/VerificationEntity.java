@@ -9,20 +9,22 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "verification", schema = "app")
-public class VerificationTokenEntity {
+public class VerificationEntity {
 
     @Id
     private UUID uuid;
-    private UUID token;
-
-    @OneToOne(targetEntity = UserEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_uuid")
-    private UserEntity user;
+    private String mail;
     @CreationTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_create")
     private LocalDateTime dtCreate;
-    public VerificationTokenEntity() {
+    public VerificationEntity() {
+    }
+
+    public VerificationEntity(UUID uuid, String mail, LocalDateTime dtCreate) {
+        this.uuid = uuid;
+        this.mail = mail;
+        this.dtCreate = dtCreate;
     }
 
     public UUID getUuid() {
@@ -33,20 +35,12 @@ public class VerificationTokenEntity {
         this.uuid = uuid;
     }
 
-    public UUID getToken() {
-        return token;
+    public String getMail() {
+        return mail;
     }
 
-    public void setToken(UUID token) {
-        this.token = token;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public LocalDateTime getDtCreate() {
@@ -54,13 +48,6 @@ public class VerificationTokenEntity {
     }
 
     public void setDtCreate(LocalDateTime dtCreate) {
-        this.dtCreate = dtCreate;
-    }
-
-    public VerificationTokenEntity(UUID uuid, UUID token, UserEntity user, LocalDateTime dtCreate) {
-        this.uuid = uuid;
-        this.token = token;
-        this.user = user;
         this.dtCreate = dtCreate;
     }
 }

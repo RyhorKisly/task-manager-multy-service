@@ -1,7 +1,8 @@
 package by.itacademy.userservice.dao.entity;
 
+import by.itacademy.userservice.core.enums.UserRole;
+import by.itacademy.userservice.core.enums.UserStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,8 +26,10 @@ public class UserEntity {
     private LocalDateTime dtUpdate;
     private String mail;
     private String fio;
-    private String role;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
     private String password;
 
     public UserEntity() {
@@ -38,8 +41,8 @@ public class UserEntity {
             LocalDateTime dtUpdate,
             String mail,
             String fio,
-            String role,
-            String status,
+            UserRole role,
+            UserStatus status,
             String password
     ) {
         this.uuid = uuid;
@@ -56,8 +59,8 @@ public class UserEntity {
         return uuid;
     }
 
-    public void setUuid(UUID id) {
-        this.uuid = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public LocalDateTime getDtCreate() {
@@ -92,19 +95,19 @@ public class UserEntity {
         this.fio = fio;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
-    public String getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 
@@ -115,6 +118,4 @@ public class UserEntity {
     public void setPassword(String password) {
         this.password = password;
     }
-
-
 }

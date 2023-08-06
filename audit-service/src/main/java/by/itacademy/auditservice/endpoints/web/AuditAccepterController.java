@@ -1,4 +1,4 @@
-package by.itacademy.auditservice.controllers;
+package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.dto.AuditCreateDTO;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;

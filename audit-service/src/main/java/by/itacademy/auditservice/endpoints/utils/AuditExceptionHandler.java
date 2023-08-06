@@ -1,10 +1,10 @@
-package by.itacademy.userservice.controllers;
+package by.itacademy.auditservice.endpoints.utils;
 
-import by.itacademy.userservice.core.errors.ErrorMessage;
-import by.itacademy.userservice.core.errors.ErrorResponse;
-import by.itacademy.userservice.core.errors.StructuredErrorResponse;
-import by.itacademy.userservice.core.enums.ErrorType;
-import by.itacademy.userservice.core.exceptions.FindEntityException;
+import by.itacademy.auditservice.core.enums.ErrorType;
+import by.itacademy.auditservice.core.errors.ErrorMessage;
+import by.itacademy.auditservice.core.errors.ErrorResponse;
+import by.itacademy.auditservice.core.errors.StructuredErrorResponse;
+import by.itacademy.auditservice.core.exceptions.FindEntityException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import java.util.List;
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
-public class UserExceptionHandler {
+public class AuditExceptionHandler {
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)

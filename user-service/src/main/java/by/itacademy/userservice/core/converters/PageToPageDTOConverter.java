@@ -1,10 +1,7 @@
 package by.itacademy.userservice.core.converters;
 
-
 import by.itacademy.userservice.core.dto.PageDTO;
 import by.itacademy.userservice.core.dto.UserDTO;
-import by.itacademy.userservice.core.enums.UserRole;
-import by.itacademy.userservice.core.enums.UserStatus;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
@@ -30,8 +27,8 @@ public class PageToPageDTOConverter implements Converter<Page<UserEntity>, PageD
                     .toEpochMilli());
             userDTO.setMail(entity.getMail());
             userDTO.setFio(entity.getFio());
-            userDTO.setRole(UserRole.valueOf(entity.getRole()));
-            userDTO.setStatus(UserStatus.valueOf(entity.getStatus()));
+            userDTO.setRole(entity.getRole());
+            userDTO.setStatus(entity.getStatus());
             userDTOS.add(userDTO);
         }
 

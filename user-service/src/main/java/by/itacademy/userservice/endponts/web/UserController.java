@@ -1,12 +1,10 @@
-package by.itacademy.userservice.controllers;
+package by.itacademy.userservice.endponts.web;
 
 import by.itacademy.userservice.core.dto.*;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,22 +21,19 @@ import java.util.UUID;
 public class UserController {
     private final IUserService userService;
     private final ConversionService conversionService;
-    private final ApplicationEventPublisher eventPublisher;
     public UserController(
             IUserService userService,
-            ConversionService conversionService,
-            ApplicationEventPublisher eventPublisher
+            ConversionService conversionService
     ) {
         this.userService = userService;
         this.conversionService = conversionService;
-        this.eventPublisher = eventPublisher;
     }
 
     @PostMapping
     public ResponseEntity<?> save(
             @RequestBody @Valid UserCreateDTO userCreateDTO
     ) {
-        userService.save(userCreateDTO);
+        userService.createByUser(userCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -69,7 +64,7 @@ public class UserController {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
-        userService.update(userCreateDTO, coordinatesDTO);
+        userService.activate(userCreateDTO, coordinatesDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

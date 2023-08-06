@@ -1,22 +1,12 @@
 package by.itacademy.auditservice.core.dto;
 
-import by.itacademy.auditservice.core.enums.UserRole;
-import by.itacademy.auditservice.core.validatiors.annotations.ValidEmail;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-import java.util.UUID;
-
+@JsonRootName(value = "audit")
 public class AuditCreateDTO {
-    @NotNull(message = "Uuid is mandatory")
-    private UUID uuid;
-    @ValidEmail
-    @NotBlank(message = "Email is mandatory")
-    private String mail;
-    @NotBlank(message = "Fio is mandatory")
-    private String fio;
-    @NotNull(message = "Role is mandatory")
-    private UserRole role;
+    @JsonProperty("user")
+    private UserShortDTO user;
     @NotBlank(message = "Text is mandatory")
     private String text;
     @NotBlank(message = "Type is mandatory with UpperCase")
@@ -26,47 +16,19 @@ public class AuditCreateDTO {
 
     public AuditCreateDTO() {
     }
-
-    public AuditCreateDTO(UUID uuid, String mail, String fio, UserRole role, String text, String type, String id) {
-        this.uuid = uuid;
-        this.mail = mail;
-        this.fio = fio;
-        this.role = role;
+    public AuditCreateDTO(UserShortDTO user, String text, String type, String id) {
+        this.user = user;
         this.text = text;
         this.type = type;
         this.id = id;
     }
 
-    public UUID getUuid() {
-        return uuid;
+    public UserShortDTO getUserGeneralDTO() {
+        return user;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public String getFio() {
-        return fio;
-    }
-
-    public void setFio(String fio) {
-        this.fio = fio;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
+    public void setUserGeneralDTO(UserShortDTO user) {
+        this.user = user;
     }
 
     public String getText() {
@@ -92,4 +54,6 @@ public class AuditCreateDTO {
     public void setId(String id) {
         this.id = id;
     }
+
+
 }
