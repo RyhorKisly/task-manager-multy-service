@@ -1,5 +1,6 @@
 package by.itacademy.auditservice.dao.entity;
 
+import by.itacademy.auditservice.core.enums.UserRole;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -11,12 +12,13 @@ public class UserEntity {
     private UUID uuid;
     private String mail;
     private String fio;
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     public UserEntity() {
     }
 
-    public UserEntity(UUID uuid, String mail, String fio, String role) {
+    public UserEntity(UUID uuid, String mail, String fio, UserRole role) {
         this.uuid = uuid;
         this.mail = mail;
         this.fio = fio;
@@ -47,11 +49,11 @@ public class UserEntity {
         this.fio = fio;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 }
