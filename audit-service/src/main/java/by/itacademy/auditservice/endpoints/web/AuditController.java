@@ -1,10 +1,9 @@
-package by.itacademy.auditservice.controllers;
+package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.core.dto.PageDTO;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.auditservice.service.api.IAuditService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
