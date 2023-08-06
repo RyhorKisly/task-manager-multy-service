@@ -1,10 +1,7 @@
 package by.itacademy.auditservice.service;
 
-import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.core.exceptions.FindEntityException;
-import by.itacademy.auditservice.core.exceptions.UndefinedDBEntityException;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
-import by.itacademy.auditservice.dao.entity.UserEntity;
 import by.itacademy.auditservice.dao.repositories.IAuditDao;
 import by.itacademy.auditservice.service.api.IAuditService;
 import org.springframework.dao.DataAccessException;
