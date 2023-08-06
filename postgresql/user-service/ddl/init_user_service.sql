@@ -22,13 +22,15 @@ CREATE TABLE app."users"
     CONSTRAINT users_mail_unique UNIQUE (mail)
 );
 
+INSERT INTO app.users(
+    uuid, dt_create, dt_update, mail, fio, role, status, password)
+VALUES ('28d0390b-8004-47c7-9946-722cc55c1bfb', current_timestamp, current_timestamp, 'admin@admin.admin', 'Admin', 'ADMIN', 'ACTIVATED', '$2a$10$7QBJYpUSNMQqMX9TW8MfsewaciNqqkw6Ng5T6DqbB9o9j2.MiW6m6');
+
 CREATE TABLE IF NOT EXISTS app.verification
 (
     uuid uuid NOT NULL,
-    token uuid NOT NULL,
-    user_uuid uuid NOT NULL,
+    mail text NOT NULL,
     dt_create timestamp without time zone NOT NULL,
     CONSTRAINT verification_pkey PRIMARY KEY (uuid),
-    CONSTRAINT verification_users_uuid_fkey FOREIGN KEY (user_uuid)
-        REFERENCES app.users (uuid)
+    CONSTRAINT verification_mail_unique UNIQUE (mail)
 )
