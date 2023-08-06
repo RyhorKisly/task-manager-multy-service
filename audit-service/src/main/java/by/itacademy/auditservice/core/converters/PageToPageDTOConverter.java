@@ -2,9 +2,8 @@ package by.itacademy.auditservice.core.converters;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.core.dto.PageDTO;
-import by.itacademy.auditservice.core.dto.UserDTO;
+import by.itacademy.auditservice.core.dto.UserShortDTO;
 import by.itacademy.auditservice.core.enums.EssenceType;
-import by.itacademy.auditservice.core.enums.UserRole;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
@@ -18,14 +17,14 @@ public class PageToPageDTOConverter implements Converter<Page<AuditEntity>, Page
         List<AuditDTO> auditDTOS = new ArrayList<>();
         for (AuditEntity entity : page.getContent()) {
             AuditDTO auditDTO = new AuditDTO();
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUuid(entity.getUser().getUuid());
-            userDTO.setMail(entity.getUser().getMail());
-            userDTO.setFio(entity.getUser().getFio());
-            userDTO.setRole(UserRole.valueOf(entity.getUser().getRole()));
+            UserShortDTO userShortDTO = new UserShortDTO();
+            userShortDTO.setUuid(entity.getUser().getUuid());
+            userShortDTO.setMail(entity.getUser().getMail());
+            userShortDTO.setFio(entity.getUser().getFio());
+            userShortDTO.setRole(entity.getUser().getRole());
             auditDTO.setUuid(entity.getUuid());
             auditDTO.setDtCreate(entity.getDtCreate());
-            auditDTO.setUser(userDTO);
+            auditDTO.setUser(userShortDTO);
             auditDTO.setText(entity.getText());
             auditDTO.setType(EssenceType.valueOf(entity.getType()));
             auditDTO.setId(entity.getId());

@@ -1,22 +1,19 @@
-package by.itacademy.auditservice.core.dto;
+package by.itacademy.userservice.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import jakarta.validation.constraints.NotBlank;
+
 @JsonRootName(value = "audit")
-public class AuditCreateDTO {
+public class AuditSendDTO {
     @JsonProperty("user")
     private UserShortDTO user;
-    @NotBlank(message = "Text is mandatory")
     private String text;
-    @NotBlank(message = "Type is mandatory with UpperCase")
     private String type;
-    @NotBlank(message = "Id is mandatory")
     private String id;
 
-    public AuditCreateDTO() {
+    public AuditSendDTO() {
     }
-    public AuditCreateDTO(UserShortDTO user, String text, String type, String id) {
+    public AuditSendDTO(UserShortDTO user, String text, String type, String id) {
         this.user = user;
         this.text = text;
         this.type = type;

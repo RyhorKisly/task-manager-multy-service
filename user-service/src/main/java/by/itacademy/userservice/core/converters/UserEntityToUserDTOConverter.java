@@ -1,8 +1,6 @@
 package by.itacademy.userservice.core.converters;
 
 import by.itacademy.userservice.core.dto.UserDTO;
-import by.itacademy.userservice.core.enums.UserRole;
-import by.itacademy.userservice.core.enums.UserStatus;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import org.springframework.core.convert.converter.Converter;
 
@@ -17,8 +15,8 @@ public class UserEntityToUserDTOConverter implements Converter<UserEntity, UserD
         userDTO.setDtUpdate(entity.getDtUpdate().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         userDTO.setMail(entity.getMail());
         userDTO.setFio(entity.getFio());
-        userDTO.setRole(UserRole.valueOf(entity.getRole()));
-        userDTO.setStatus(UserStatus.valueOf(entity.getStatus()));
+        userDTO.setRole(entity.getRole());
+        userDTO.setStatus(entity.getStatus());
         return userDTO;
     }
 

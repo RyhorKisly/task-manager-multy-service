@@ -18,8 +18,8 @@ public class UserCreateDTO {
     @NotNull(message = "Status is mandatory")
     private UserStatus status;
     @NotBlank(message = "Password is mandatory")
-    @Size(min = 4, message = "Password too short")
-    @Size(max = 20, message = "Password too long")
+    @Size(min = 4, message = "Password too short. Must be more 20 symbols")
+    @Size(max = 20, message = "Password too long. Must be less 20 symbols")
     private String password;
 
     public UserCreateDTO() {
