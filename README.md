@@ -99,19 +99,19 @@ P.S. - Для корректной работы необходимо ввест�
 ###                                        для mail.ru:  
   
 spring:  
->  mail:  
->>    host: smtp.mail.ru  
->>    port: 465  
->>    username: ***@mail.ru  
->>    password: ***  
->>    properties:  
->>>      "mail.smtp.ssl.enable": true  
->>>      mail:  
->>>>        encoding: UTF-8  
->>>>        transport:  
->>>>>          protocol: smtp  
->>>>        smtp:
->>>>>          auth: true
->>>>          starttls:
->>>>>            enable: true
+  mail:  
+    host: smtp.mail.ru  
+    port: 465  
+    username: ***@mail.ru  
+    password: ***  
+    properties:  
+      "mail.smtp.ssl.enable": true  
+      mail:  
+        encoding: UTF-8  
+        transport:  
+          protocol: smtp  
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 ------------------------------------------------------------------------------
