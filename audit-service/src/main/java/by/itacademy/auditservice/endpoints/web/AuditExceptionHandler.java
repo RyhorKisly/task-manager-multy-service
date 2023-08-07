@@ -1,4 +1,4 @@
-package by.itacademy.auditservice.endpoints.utils;
+package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.enums.ErrorType;
 import by.itacademy.auditservice.core.errors.ErrorMessage;
