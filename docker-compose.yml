@@ -22,7 +22,7 @@ services:
       - taskmanager_ntwrk
   swagger-ui:
     build: swagger-ui
-    image: taskmanager_swagger-ui:1.0.0
+    image: taskmanager_swagger-ui:1.0.3
     ports:
       - "81:8080"
     networks:
