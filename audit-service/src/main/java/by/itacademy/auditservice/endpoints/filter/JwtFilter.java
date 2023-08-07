@@ -2,7 +2,7 @@ package by.itacademy.auditservice.endpoints.filter;
 
 import by.itacademy.auditservice.core.dto.UserShortDTO;
 import by.itacademy.auditservice.endpoints.utils.JwtTokenHandler;
-import by.itacademy.auditservice.service.UserInteractService;
+import by.itacademy.auditservice.service.api.IUserInteractService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,11 +25,11 @@ import static org.apache.logging.log4j.util.Strings.isEmpty;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenHandler jwtHandler;
-    private final UserInteractService userInteractService;
+    private final IUserInteractService userInteractService;
 
     public JwtFilter(
             JwtTokenHandler jwtHandler,
-            UserInteractService userInteractService
+            IUserInteractService userInteractService
             ) {
         this.jwtHandler = jwtHandler;
         this.userInteractService = userInteractService;
