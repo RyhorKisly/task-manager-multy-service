@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class AuditDTO {
     private UUID uuid;
-    private LocalDateTime dtCreate;
+    private Long dtCreate;
     private UserShortDTO user;
     private String text;
     private EssenceType type;
@@ -18,7 +18,7 @@ public class AuditDTO {
 
     public AuditDTO(
             UUID uuid,
-            LocalDateTime dtCreate,
+            Long dtCreate,
             UserShortDTO user,
             String text,
             EssenceType type,
@@ -40,11 +40,11 @@ public class AuditDTO {
         this.uuid = uuid;
     }
 
-    public LocalDateTime getDtCreate() {
+    public Long getDtCreate() {
         return dtCreate;
     }
 
-    public void setDtCreate(LocalDateTime dtCreate) {
+    public void setDtCreate(Long dtCreate) {
         this.dtCreate = dtCreate;
     }
 

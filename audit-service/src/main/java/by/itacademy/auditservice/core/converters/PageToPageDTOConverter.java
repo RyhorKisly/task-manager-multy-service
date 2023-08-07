@@ -8,6 +8,7 @@ import by.itacademy.auditservice.dao.entity.AuditEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,10 @@ public class PageToPageDTOConverter implements Converter<Page<AuditEntity>, Page
             userShortDTO.setFio(entity.getUser().getFio());
             userShortDTO.setRole(entity.getUser().getRole());
             auditDTO.setUuid(entity.getUuid());
-            auditDTO.setDtCreate(entity.getDtCreate());
+            auditDTO.setDtCreate(entity.getDtCreate()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli());
             auditDTO.setUser(userShortDTO);
             auditDTO.setText(entity.getText());
             auditDTO.setType(EssenceType.valueOf(entity.getType()));

@@ -6,6 +6,8 @@ import by.itacademy.auditservice.core.enums.EssenceType;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import org.springframework.core.convert.converter.Converter;
 
+import java.time.ZoneId;
+
 public class AuditEntityToAuditDTOConverter implements Converter<AuditEntity, AuditDTO> {
     @Override
     public AuditDTO convert(AuditEntity entity) {
@@ -18,12 +20,15 @@ public class AuditEntityToAuditDTOConverter implements Converter<AuditEntity, Au
         userShortDTO.setRole(entity.getUser().getRole());
 
         auditDTO.setUuid(entity.getUuid());
-        auditDTO.setDtCreate(entity.getDtCreate());
+        auditDTO.setDtCreate(entity.getDtCreate()
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli());
         auditDTO.setUser(userShortDTO);
         auditDTO.setText(entity.getText());
         auditDTO.setType(EssenceType.valueOf(entity.getType()));
         auditDTO.setId(entity.getId());
-;
+
         return auditDTO;
     }
 
