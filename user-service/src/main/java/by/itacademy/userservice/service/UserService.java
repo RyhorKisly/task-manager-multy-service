@@ -32,24 +32,20 @@ public class UserService implements IUserService {
     private static final String USER_EXIST_RESPONSE = "User with this login exists";
     private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
     private static final String WRONG_MAIL_RESPONSE = "Wrong mail";
-    private static final String USER_SAVED = "User: %s was created by: %s";
-    private static final String USER_UPDATED = "User: %s was updated by: %s";
+    private static final String USER_SAVED = "User: %s was created";
+    private static final String USER_UPDATED = "User: %s was updated";
 
 
     private final IUserDao userDao;
     private final PasswordEncoder encoder;
-    private final UserHolder holder;
-    private final IAuditInteractService auditInteractService;
+
+    private IAuditInteractService auditInteractService;
     public UserService(
             IUserDao userDao,
-            PasswordEncoder encoder,
-            UserHolder holder,
-            IAuditInteractService auditInteractService
+            PasswordEncoder encoder
     ) {
         this.userDao = userDao;
         this.encoder = encoder;
-        this.holder = holder;
-        this.auditInteractService = auditInteractService;
     }
 
     @Override
@@ -58,10 +54,7 @@ public class UserService implements IUserService {
         UserEntity userEntity = convertDTOToEntity(item);
         userEntity = checkAndSaveUserEntity(userEntity);
 
-        UserDetails userDetails = holder.getUser();
-        UserShortDTO userShortDTO = fillUserShortDTO(get(userDetails.getUsername()));
-        String text =  String.format(USER_SAVED, userEntity.getMail(), userShortDTO.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        auditInteractService.send(userEntity, String.format(USER_SAVED, userEntity.getMail()));
 
         return userEntity;
     }
@@ -119,10 +112,7 @@ public class UserService implements IUserService {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }
 
-        UserDetails userDetails = holder.getUser();
-        UserShortDTO userShortDTO = fillUserShortDTO(get(userDetails.getUsername()));
-        String text =  String.format(USER_UPDATED, userEntity.getMail(), userShortDTO.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        auditInteractService.send(userEntity, String.format(USER_UPDATED, userEntity.getMail()));
     }
 
     @Override
@@ -136,6 +126,13 @@ public class UserService implements IUserService {
         }
     }
 
+    public IAuditInteractService getAuditInteractService() {
+        return auditInteractService;
+    }
+
+    public void setAuditInteractService(IAuditInteractService auditInteractService) {
+        this.auditInteractService = auditInteractService;
+    }
 
     private UserEntity convertDTOToEntity(UserCreateDTO item) {
         UserEntity entity = new UserEntity();
@@ -157,15 +154,6 @@ public class UserService implements IUserService {
         userEntity.setStatus(UserStatus.WAITING_ACTIVATION);
         userEntity.setPassword(encoder.encode(item.getPassword()));
         return userEntity;
-    }
-
-    private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
-        UserShortDTO userShortDTO = new UserShortDTO();
-        userShortDTO.setUuid(entityEntity.getUuid());
-        userShortDTO.setMail(entityEntity.getMail());
-        userShortDTO.setFio(entityEntity.getFio());
-        userShortDTO.setRole(entityEntity.getRole());
-        return userShortDTO;
     }
 
     private void setFieldsToUpdate(UserEntity userEntity, UserCreateDTO item) {

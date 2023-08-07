@@ -63,9 +63,8 @@ public class UserAuthenticationService implements IUserAuthenticationService {
 
         emailService.sendEmail(userEntity, verificationEntity);
 
-        UserShortDTO userShortDTO = fillUserShortDTO(userEntity);
         String text = String.format(USER_REGISTERED, userEntity.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        auditInteractService.send(userEntity, userEntity, text);
     }
 
     @Override
@@ -90,9 +89,8 @@ public class UserAuthenticationService implements IUserAuthenticationService {
         verificationService.delete(verificationEntity.getUuid());
         verificationService.deleteByDtCreateLessThan(LocalDateTime.now().minusDays(7));
 
-        UserShortDTO userShortDTO = fillUserShortDTO(userEntity);
         String text = String.format(USER_ACTIVATED, userEntity.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        auditInteractService.send(userEntity, userEntity, text);
     }
 
     @Override
@@ -127,15 +125,6 @@ public class UserAuthenticationService implements IUserAuthenticationService {
                 userEntity.getFio(),
                 userEntity.getRole()
         );
-    }
-
-    private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
-        UserShortDTO userShortDTO = new UserShortDTO();
-        userShortDTO.setUuid(entityEntity.getUuid());
-        userShortDTO.setMail(entityEntity.getMail());
-        userShortDTO.setFio(entityEntity.getFio());
-        userShortDTO.setRole(entityEntity.getRole());
-        return userShortDTO;
     }
 
 }
