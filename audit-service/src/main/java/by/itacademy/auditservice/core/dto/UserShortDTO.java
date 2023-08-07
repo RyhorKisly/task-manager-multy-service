@@ -3,11 +3,12 @@ package by.itacademy.auditservice.core.dto;
 
 import by.itacademy.auditservice.core.enums.UserRole;
 import by.itacademy.auditservice.core.validatiors.annotations.ValidEmail;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserShortDTO {
     @NotNull(message = "Uuid is mandatory")
     private UUID uuid;

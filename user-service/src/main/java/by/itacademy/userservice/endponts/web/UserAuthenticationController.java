@@ -60,8 +60,4 @@ public class UserAuthenticationController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/users/general")
-    public ResponseEntity<UserShortDTO> getGeneralCard() {
-        return new ResponseEntity<>(userAuthenticationService.getGeneralUser(), HttpStatus.OK);
-    }
 }

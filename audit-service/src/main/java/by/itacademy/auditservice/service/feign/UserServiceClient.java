@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 //TODO переместить запись урла в файл с пропертями
-@FeignClient(value = "user-service", url = "http://localhost:8080/users/general")
+@FeignClient(value = "user-service", url = "http://localhost:8080/users/me")
 public interface UserServiceClient {
 
     @GetMapping
-    ResponseEntity<UserShortDTO> send(
+    ResponseEntity<?> send(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken
             );
 }
