@@ -17,7 +17,7 @@ public interface IUserService {
     Page<UserEntity> get(PageRequest pageRequest);
     UserEntity get(UUID uuid);
     UserEntity get(String mail);
-    void activate(@Valid UserCreateDTO userCreateDTO, CoordinatesDTO coordinatesDTO);
+    void update(@Valid UserCreateDTO userCreateDTO, CoordinatesDTO coordinatesDTO);
     void activate(@Valid UserEntity userEntity);
 
 
