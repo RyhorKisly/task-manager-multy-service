@@ -64,7 +64,7 @@ public class UserController {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
-        userService.activate(userCreateDTO, coordinatesDTO);
+        userService.update(userCreateDTO, coordinatesDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

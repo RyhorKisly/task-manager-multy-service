@@ -100,7 +100,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public void activate(UserCreateDTO item, CoordinatesDTO coordinates) {
+    public void update(UserCreateDTO item, CoordinatesDTO coordinates) {
 
         UserEntity userEntity = userDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
@@ -114,7 +114,7 @@ public class UserService implements IUserService {
         setFieldsToUpdate(userEntity, item);
 
         try {
-            userDao.save(userEntity);
+            userDao.saveAndFlush(userEntity);
         } catch (DataAccessException ex) {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }

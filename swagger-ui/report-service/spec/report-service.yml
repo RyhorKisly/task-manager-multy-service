@@ -18,24 +18,27 @@ servers:
         default: "80"
 
 tags:
-  - name: "Пользователи"
-    description: "Информация о пользователях системы"
-  - name: "Личный кабинет"
-    description: "Доступ к личному кабинету"
+  - name: "Отчёты"
+    description: "Построение отчётов"
 
 paths:
-  /api/v1/users:
+  /api/v1/report/{type}:
     post:
       tags:
-        - "Пользователи"
-      summary: "Добавление нового пользователя"
-      security:
-        - bearerAuth: [ADMIN]
+        - "Отчёты"
+      summary: "Добавление нового отчёта"
+      parameters:
+        - in: path
+          name: type
+          description: "Тип отчёта"
+          required: true
+          schema:
+            $ref: '#/components/schemas/ReportType'
       requestBody:
-        $ref: "#/components/requestBodies/CreateUser"
+        $ref: "#/components/requestBodies/CreateReport"
       responses:
         '201':
-          description: "Пользователь добавлен"
+          description: Отчёт запущен
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -44,12 +47,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
+  /api/v1/report:
     get:
       tags:
-        - "Пользователи"
-      summary: "Получить страницу пользователей"
-      security:
-        - bearerAuth: [ADMIN]
+        - "Отчёты"
+      summary: "Получить страницу отчётов"
       parameters:
         - in: query
           name: page
@@ -73,7 +75,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PageOfUser'
+                $ref: '#/components/schemas/PageOfReport'
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -82,142 +84,41 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/{uuid}:
+  /api/v1/report/{uuid}/export:
     get:
       tags:
-        - "Пользователи"
-      summary: "Получить информацию о пользователе"
-      security:
-        - bearerAuth: [ADMIN]
+        - "Отчёты"
+      summary: Скачать сформированный отчёт
       parameters:
         - in: path
           name: uuid
-          description: "Идентификатор пользователя"
-          required: true
+          description: Идентификатор отчёта
           schema:
             type: string
             format: uuid
+          required: true
       responses:
         '200':
           description: OK
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/{uuid}/dt_update/{dt_update}:
-    put:
-      tags:
-        - "Пользователи"
-      summary: "Редактировать информацию о пользователе"
-      security:
-        - bearerAuth: [ADMIN]
-      parameters:
-        - in: path
-          name: uuid
-          description: "Идентификатор пользователя"
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - in: path
-          name: dt_update
-          required: true
-          schema:
-            type: integer
-            format: int64
-          description: "Дата последнего обновления записи"
-      requestBody:
-        $ref: "#/components/requestBodies/CreateUser"
-      responses:
-        '200':
-          description: "Пользователь обновлён"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/registration:
-    post:
-      tags:
-        - "Личный кабинет"
-      summary: "Самостоятельная регистрация пользователя"
-      requestBody:
-        $ref: "#/components/requestBodies/RegistrationUser"
-      responses:
-        '201':
-          description: "Пользователь зарегистрирован"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/verification:
-    get:
-      tags:
-        - "Личный кабинет"
-      summary: "Верификация самостоятельного зарегистрированного пользователя"
-      parameters:
-        - in: query
-          name: code
-          schema:
-            type: string
-          description: Код верификации подтверждающий доступ к почтовому адресу
-          required: true
-        - in: query
-          name: mail
-          schema:
-            type: string
-          description: Электронная почта для которой был выдан код верификации
-          required: true
-      responses:
-        '200':
-          description: "Пользователь верифицирован"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/login:
-    post:
-      tags:
-        - "Личный кабинет"
-      summary: "Вход"
-      requestBody:
-        $ref: "#/components/requestBodies/LoginUser"
-      responses:
-        '200':
-          description: "Вход выполнен. Токен для Authorization Header"
-          content:
-            application/jwt:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
               schema:
                 type: string
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-  /api/v1/users/me:
-    get:
-      tags:
-        - "Личный кабинет"
-      summary: "Получить информацию о себе"
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
+                format: binary
+                description: Файл
+          headers:
+            Content-Disposition:
               schema:
-                $ref: '#/components/schemas/User'
+                type: string
+                description: Описание файла
+                example: 'attachment; filename="f43b1a97-dc00-40e2-9450-ace8d2416f3d"'
+            Content-Type:
+              schema:
+                type: string
+                description: Описание типа контента
+                example: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        '204':
+          description: Сервер, по предоставленному uuid, не смог найти информацию
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -226,35 +127,43 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
+    head:
+      tags:
+        - "Отчёты"
+      summary: Проверка доступности сформированного отчёта
+      parameters:
+        - in: path
+          name: uuid
+          description: Идентификатор отчёта
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: Сервер, по предоставленному uuid, не смог найти информацию
+        '400':
+          $ref: '#/components/responses/Bad_Request'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/Internal_Server_Error'
+
+
 components:
   requestBodies:
-    CreateUser:
-      description: Тело для создания Пользователя
+    CreateReport:
+      description: Параметры для создания отчёта
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserCreate'
-    RegistrationUser:
-      description: Тело для регистрации пользователя
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserRegistration'
-    LoginUser:
-      description: Тело для входа
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/UserLogin'
-
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+            oneOf:
+              - $ref: '#/components/schemas/ReportParamAudit'
 
   responses:
     Bad_Request:
@@ -281,11 +190,11 @@ components:
     Unauthorized:
       description: Для выполнения запроса на данный адрес требуется передать токен авторизации
     Forbidden:
-      description: Данному токену авторизации запрещено выполнять запроса на данный адрес
+      description: Данному токенту авторизации запрещено выполнять запроса на данный адрес
     Internal_Server_Error:
       description: Внутренняя ошибка сервера. Сервер не смог корректно обработать запрос
       content:
-        application/json:
+        applicaion/json:
           schema:
             type: array
             items:
@@ -294,87 +203,74 @@ components:
             - logref: error
               message:  Сервер не смог корректно обработать запрос. Пожалуйста обратитесь к администратору
   schemas:
-    UserRole:
-      type: string
-      description: |
-        Роль пользователя:
-          * `ADMIN` - Администратор
-          * `USER` - Пользователь
-          * `MANAGER` - Менеджер
-      enum:
-        - "ADMIN"
-        - "USER"
-        - "MANAGER"
-    UserStatus:
-      type: string
-      description: |
-        Статус пользователя:
-          * `WAITING_ACTIVATION` - Ожидает активации
-          * `ACTIVATED` - Активирован
-          * `DEACTIVATED` - Деактивирован
-      enum:
-        - "WAITING_ACTIVATION"
-        - "ACTIVATED"
-        - "DEACTIVATED"
-    User:
+    Report:
       type: object
-      description: Пользователь
+      description: Отчёт
+      required:
+        - description
       allOf:
         - $ref: '#/components/schemas/t_base_essence'
       properties:
-        mail:
-          type: string
-          description: "Электронная почта"
-        fio:
-          type: string
-          description: "ФИО"
-        role:
-          $ref: '#/components/schemas/UserRole'
         status:
-          $ref: '#/components/schemas/UserStatus'
-    UserCreate:
-      type: object
-      description: Пользователь
-      allOf:
-        - $ref: '#/components/schemas/User'
-      properties:
-        password:
           type: string
-          description: "Пароль"
-    UserRegistration:
-      type: object
-      description: Пользователь
-      properties:
-        mail:
+          description: |
+            Статус отчёта:
+              * `LOADED` - Ожидает формирования
+              * `PROGRESS` - Формирует
+              * `ERROR` - Ошибка формирование
+              * `DONE` - Сформирован
+          enum:
+            - LOADED
+            - PROGRESS
+            - ERROR
+            - DONE
+        type:
+          $ref: '#/components/schemas/ReportType'
+        description:
           type: string
-          description: "Электронная почта"
-        fio:
-          type: string
-          description: "ФИО"
-        password:
-          type: string
-          description: "Пароль"
-    UserLogin:
-      type: object
-      description: Пользователь
-      properties:
-        mail:
-          type: string
-          description: "Электронная почта"
-        password:
-          type: string
-          description: "Пароль"
+          description: "Описание параметров отчёта в человеческом формате"
+          readOnly: true
+          example: "Журнал аудита за: 01.01.2021 - 01.01.2022"
+        params:
+          oneOf:
+            - $ref: '#/components/schemas/ReportParamAudit'
 
-    PageOfUser:
+    ReportType:
+      type: string
+      description: |
+        Тип отчёта:
+          * `JOURNAL_AUDIT` - Отчёт по действиям в системе
+      enum:
+        - JOURNAL_AUDIT
+
+    ReportParamAudit:
       type: object
-      description: Страница пользователей
+      description: Параметры запуска отчёта о питании
+      properties:
+        user:
+          description: Записи относящиеся к пользователю
+          type: string
+          format: uuid
+        from:
+          description: Записи из журнала начиная с даты
+          type: string
+          format: date
+        to:
+          description: Записи из журнала заканчивая датой
+          type: string
+          format: date
+
+
+    PageOfReport:
+      type: object
+      description: Отчёты
       allOf:
         - $ref: '#/components/schemas/t_page'
       properties:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/Report'
 
     t_base_essence:
       type: object
