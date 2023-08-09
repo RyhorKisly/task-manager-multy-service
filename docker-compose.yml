@@ -28,11 +28,11 @@ services:
     networks:
       - taskmanager_ntwrk
 
-  user-service:
-    build: user-service
-    image: taskmanager_user-service:1.0.1
-    networks:
-      - taskmanager_ntwrk
+#  user-service:
+#    build: user-service
+#    image: taskmanager_user-service:1.0.1
+#    networks:
+#      - taskmanager_ntwrk
 
   proxy:
     build: proxy
