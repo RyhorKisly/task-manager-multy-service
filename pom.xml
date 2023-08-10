@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>shared-resource</module>
         <module>user-service</module>
         <module>audit-service</module>
         <module>comments-service</module>
@@ -17,5 +18,13 @@
         <module>report-service</module>
         <module>task-service</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>by.itacademy</groupId>
+            <artifactId>shared-resource</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>
