@@ -34,10 +34,10 @@ public class AuditAccepterService implements IAuditAccepterService {
 
     private AuditEntity convertDTOToEntity(AuditCreateDTO item) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setUuid(item.getUserGeneralDTO().getUuid());
-        userEntity.setMail(item.getUserGeneralDTO().getMail());
-        userEntity.setFio(item.getUserGeneralDTO().getFio());
-        userEntity.setRole(item.getUserGeneralDTO().getRole());
+        userEntity.setUuid(item.getUserShortDTO().getUuid());
+        userEntity.setMail(item.getUserShortDTO().getMail());
+        userEntity.setFio(item.getUserShortDTO().getFio());
+        userEntity.setRole(item.getUserShortDTO().getRole());
 
         AuditEntity auditEntity = new AuditEntity();
         auditEntity.setUuid(UUID.randomUUID());
