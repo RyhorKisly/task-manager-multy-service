@@ -1,6 +1,8 @@
 package by.itacademy.taskservice.endpoints.utils;
 
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.taskservice.config.properites.JWTProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -14,9 +16,14 @@ import java.util.function.Function;
 public class JwtTokenHandler {
 
     private final JWTProperty property;
+    private final ObjectMapper objectMapper;
 
-    public JwtTokenHandler(JWTProperty property) {
+    public JwtTokenHandler(
+            JWTProperty property,
+            ObjectMapper objectMapper
+    ) {
         this.property = property;
+        this.objectMapper = objectMapper;
     }
 
     public String generateUserAccessToken(Map<String, Object> extraClaims, UserDetails user) {
@@ -58,6 +65,14 @@ public class JwtTokenHandler {
 
     public String getUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public UserShortDTO getUser(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(property.getSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return objectMapper.convertValue(claims.get(property.getUser()), UserShortDTO.class);
     }
 
     public Date getExpirationDate(String token) {

@@ -21,13 +21,13 @@ public class JwtTokenHandler {
         this.property = property;
     }
 
-    public String generateUserAccessToken(Map<String, Object> extraClaims, UserDetails user) {
-        return generateUserAccessToken(extraClaims, user.getUsername());
+    public String generateUserAccessToken(UserShortDTO userShortDTO, UserDetails user) {
+        return generateUserAccessToken(userShortDTO, user.getUsername());
     }
 
-    public String generateUserAccessToken(Map<String, Object> extraClaims, String name) {
+    public String generateUserAccessToken(UserShortDTO userShortDTO, String name) {
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .claim(property.getUser(), userShortDTO)
                 .setSubject(name)
                 .setIssuer(property.getIssuer())
                 .setIssuedAt(new Date())

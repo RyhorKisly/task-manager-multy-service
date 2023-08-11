@@ -109,9 +109,7 @@ public class UserAuthenticationService implements IUserAuthenticationService {
             throw new NotActivatedException(NOT_VERIFIED_RESPONSE);
         }
 
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("User", fillUserShortDTO(userEntity));
-        return jwtHandler.generateUserAccessToken(extraClaims, userEntity.getMail());
+        return jwtHandler.generateUserAccessToken(fillUserShortDTO(userEntity), userEntity.getMail());
     }
 
     @Override
