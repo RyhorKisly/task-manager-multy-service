@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -18,11 +19,22 @@ public class JwtTokenHandler {
         this.property = property;
     }
 
-    public String generateAccessToken(UserDetails user) {
-        return generateAccessToken(user.getUsername());
+    public String generateUserAccessToken(Map<String, Object> extraClaims, UserDetails user) {
+        return generateUserAccessToken(extraClaims, user.getUsername());
     }
 
-    public String generateAccessToken(String name) {
+    public String generateUserAccessToken(Map<String, Object> extraClaims, String name) {
+        return Jwts.builder()
+                .setClaims(extraClaims)
+                .setSubject(name)
+                .setIssuer(property.getIssuer())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7))) // 1 week
+                .signWith(SignatureAlgorithm.HS512, property.getSecret())
+                .compact();
+    }
+
+    public String generateSystemAccessToken(String name) {
         return Jwts.builder()
                 .setSubject(name)
                 .setIssuer(property.getIssuer())

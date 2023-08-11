@@ -1,5 +1,7 @@
 package by.itacademy.userservice.endponts.filter;
 
+import by.itacademy.sharedresource.core.enums.UserRole;
+import by.itacademy.userservice.config.properites.JWTProperty;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
 import by.itacademy.userservice.service.api.IUserService;
@@ -26,13 +28,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenHandler jwtHandler;
     private final IUserService userService;
+    private final JWTProperty property;
 
     public JwtFilter(
             JwtTokenHandler jwtHandler,
-            IUserService userService
+            IUserService userService,
+            JWTProperty property
     ) {
         this.jwtHandler = jwtHandler;
         this.userService = userService;
+        this.property = property;
     }
 
     @Override
@@ -56,12 +61,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // Get user identity and set it on the spring security context
         String userName = jwtHandler.getUsername(token);
-        UserEntity userEntity = userService.get(userName);
-        UserDetails userDetails = User.builder()
+        UserDetails userDetails;
+
+        if(userName.equals(property.getSystem())) {
+            userDetails = User.builder()
+                    .username(userName)
+                    .password(property.getSystem())
+                    .roles(UserRole.SYSTEM.name())
+                    .build();
+        } else {
+            UserEntity userEntity = userService.get(userName);
+            userDetails = User.builder()
                     .username(userEntity.getMail())
                     .password(userEntity.getPassword())
                     .roles(userEntity.getRole().name())
                     .build();
+        }
 
 
 

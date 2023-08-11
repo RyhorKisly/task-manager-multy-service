@@ -1,6 +1,6 @@
 package by.itacademy.taskservice.endpoints.filter;
 
-import by.itacademy.taskservice.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.taskservice.endpoints.utils.JwtTokenHandler;
 import by.itacademy.taskservice.service.api.IUserInteractService;
 import jakarta.servlet.FilterChain;

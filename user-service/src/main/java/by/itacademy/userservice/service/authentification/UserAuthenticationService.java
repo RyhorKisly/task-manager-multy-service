@@ -1,11 +1,11 @@
 package by.itacademy.userservice.service.authentification;
 
-import by.itacademy.userservice.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
+import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.userservice.core.dto.UserLoginDTO;
 import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.enums.UserStatus;
-import by.itacademy.userservice.core.exceptions.NotActivatedException;
-import by.itacademy.userservice.core.exceptions.VerificationException;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.entity.VerificationEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -98,7 +100,7 @@ public class UserAuthenticationService implements IUserAuthenticationService {
     @Override
     @Transactional(readOnly = true)
     public String authorize(UserLoginDTO userLoginDTO) {
-        UserEntity userEntity = userService.get(userLoginDTO.getMail());
+        UserEntity userEntity = userService.get(userLoginDTO.getMail(), UserStatus.ACTIVATED);
 
         if(!encoder.matches(userLoginDTO.getPassword(), userEntity.getPassword())){
             throw new IllegalArgumentException(WRONG_PASSWORD_RESPONSE);
@@ -107,7 +109,9 @@ public class UserAuthenticationService implements IUserAuthenticationService {
             throw new NotActivatedException(NOT_VERIFIED_RESPONSE);
         }
 
-        return jwtHandler.generateAccessToken(userEntity.getMail());
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("User", fillUserShortDTO(userEntity));
+        return jwtHandler.generateUserAccessToken(extraClaims, userEntity.getMail());
     }
 
     @Override
