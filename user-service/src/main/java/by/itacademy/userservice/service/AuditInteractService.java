@@ -36,7 +36,7 @@ public class AuditInteractService implements IAuditInteractService {
         AuditCreateDTO auditCreateDTO = new AuditCreateDTO();
 
         //user, который произвёл операцию
-        auditCreateDTO.setUserGeneralDTO(userShortDTO);
+        auditCreateDTO.setUserShortDTO(userShortDTO);
 
         //EssenceType для аудита
         auditCreateDTO.setType(EssenceType.USER);

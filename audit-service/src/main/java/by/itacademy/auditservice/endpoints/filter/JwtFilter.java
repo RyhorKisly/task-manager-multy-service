@@ -70,6 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .build();
         } else {
             UserShortDTO userShortDTO = userInteractService.sendAndGet(token);
+//          UserShortDTO userShortDTO = jwtHandler.getUser(token);
             userDetails = User.builder()
                     .username(userShortDTO.getMail())
                     .password("123")

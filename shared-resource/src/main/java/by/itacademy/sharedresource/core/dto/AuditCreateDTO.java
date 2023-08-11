@@ -26,11 +26,11 @@ public class AuditCreateDTO {
         this.id = id;
     }
 
-    public UserShortDTO getUserGeneralDTO() {
+    public UserShortDTO getUserShortDTO() {
         return user;
     }
 
-    public void setUserGeneralDTO(UserShortDTO user) {
+    public void setUserShortDTO(UserShortDTO user) {
         this.user = user;
     }
 
