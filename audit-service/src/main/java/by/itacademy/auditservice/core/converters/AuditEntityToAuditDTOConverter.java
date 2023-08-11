@@ -1,9 +1,9 @@
 package by.itacademy.auditservice.core.converters;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
-import by.itacademy.auditservice.core.dto.UserShortDTO;
-import by.itacademy.auditservice.core.enums.EssenceType;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.enums.EssenceType;
 import org.springframework.core.convert.converter.Converter;
 
 import java.time.ZoneId;
@@ -26,7 +26,7 @@ public class AuditEntityToAuditDTOConverter implements Converter<AuditEntity, Au
                 .toEpochMilli());
         auditDTO.setUser(userShortDTO);
         auditDTO.setText(entity.getText());
-        auditDTO.setType(EssenceType.valueOf(entity.getType()));
+        auditDTO.setType(entity.getType());
         auditDTO.setId(entity.getId());
 
         return auditDTO;

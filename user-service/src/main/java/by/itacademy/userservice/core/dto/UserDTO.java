@@ -1,6 +1,6 @@
 package by.itacademy.userservice.core.dto;
 
-import by.itacademy.userservice.core.enums.UserRole;
+import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
 
 import java.util.UUID;

@@ -1,5 +1,6 @@
 package by.itacademy.auditservice.dao.entity;
 
+import by.itacademy.sharedresource.core.enums.EssenceType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
@@ -20,7 +21,8 @@ public class AuditEntity {
     @JoinColumn(name = "user_uuid", referencedColumnName = "uuid")
     private UserEntity user;
     private String text;
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private EssenceType type;
     private String id;
 
     public AuditEntity() {
@@ -31,7 +33,7 @@ public class AuditEntity {
             LocalDateTime dtCreate,
             UserEntity user,
             String text,
-            String type,
+            EssenceType type,
             String id
     ) {
         this.uuid = uuid;
@@ -74,11 +76,11 @@ public class AuditEntity {
         this.text = text;
     }
 
-    public String getType() {
+    public EssenceType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(EssenceType type) {
         this.type = type;
     }
 

@@ -1,11 +1,11 @@
 package by.itacademy.auditservice.service;
 
-import by.itacademy.auditservice.core.dto.AuditCreateDTO;
 import by.itacademy.auditservice.core.exceptions.UndefinedDBEntityException;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.auditservice.dao.entity.UserEntity;
 import by.itacademy.auditservice.dao.repositories.IAuditDao;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
+import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +43,7 @@ public class AuditAccepterService implements IAuditAccepterService {
         auditEntity.setUuid(UUID.randomUUID());
         auditEntity.setUser(userEntity);
         auditEntity.setText(item.getText());
-        auditEntity.setType(item.getType().toUpperCase());
+        auditEntity.setType(item.getType());
         auditEntity.setId(item.getId());
         return auditEntity;
     }

@@ -1,10 +1,9 @@
 package by.itacademy.auditservice.core.converters;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
-import by.itacademy.auditservice.core.dto.PageDTO;
-import by.itacademy.auditservice.core.dto.UserShortDTO;
-import by.itacademy.auditservice.core.enums.EssenceType;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
+import by.itacademy.sharedresource.core.dto.PageDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 
@@ -30,7 +29,7 @@ public class PageToPageDTOConverter implements Converter<Page<AuditEntity>, Page
                     .toEpochMilli());
             auditDTO.setUser(userShortDTO);
             auditDTO.setText(entity.getText());
-            auditDTO.setType(EssenceType.valueOf(entity.getType()));
+            auditDTO.setType(entity.getType());
             auditDTO.setId(entity.getId());
             auditDTOS.add(auditDTO);
         }

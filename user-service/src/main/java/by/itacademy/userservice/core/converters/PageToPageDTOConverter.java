@@ -1,6 +1,6 @@
 package by.itacademy.userservice.core.converters;
 
-import by.itacademy.userservice.core.dto.PageDTO;
+import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.userservice.core.dto.UserDTO;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import org.springframework.core.convert.converter.Converter;

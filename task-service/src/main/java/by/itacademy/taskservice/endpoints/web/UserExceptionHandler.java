@@ -1,13 +1,14 @@
 package by.itacademy.taskservice.endpoints.web;
 
-import by.itacademy.taskservice.core.enums.ErrorType;
-import by.itacademy.taskservice.core.errors.ErrorMessage;
-import by.itacademy.taskservice.core.errors.ErrorResponse;
-import by.itacademy.taskservice.core.errors.StructuredErrorResponse;
+import by.itacademy.sharedresource.core.enums.ErrorType;
+import by.itacademy.sharedresource.core.errors.ErrorMessage;
+import by.itacademy.sharedresource.core.errors.ErrorResponse;
+import by.itacademy.sharedresource.core.errors.StructuredErrorResponse;
+import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
+import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
+import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.taskservice.core.exceptions.FindEntityException;
-import by.itacademy.taskservice.core.exceptions.NotActivatedException;
-import by.itacademy.taskservice.core.exceptions.NotVerifiedCoordinatesException;
-import by.itacademy.taskservice.core.exceptions.VerificationException;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -57,8 +58,11 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageConversionException.class)
-    public ResponseEntity<?> handleBadRequest(HttpMessageConversionException ex) {
+    @ExceptionHandler({
+                    HttpMessageConversionException.class,
+                    FeignException.class
+    })
+    public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage("The request contains incorrect data. Change request and try again or contact support!");

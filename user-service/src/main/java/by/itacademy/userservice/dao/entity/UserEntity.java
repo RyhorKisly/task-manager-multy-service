@@ -1,6 +1,6 @@
 package by.itacademy.userservice.dao.entity;
 
-import by.itacademy.userservice.core.enums.UserRole;
+import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

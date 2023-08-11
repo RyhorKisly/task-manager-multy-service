@@ -1,8 +1,8 @@
 package by.itacademy.auditservice.core.dto;
 
-import by.itacademy.auditservice.core.enums.EssenceType;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.enums.EssenceType;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class AuditDTO {

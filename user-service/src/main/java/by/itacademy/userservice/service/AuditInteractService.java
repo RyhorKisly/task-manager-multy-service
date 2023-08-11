@@ -1,46 +1,49 @@
 package by.itacademy.userservice.service;
 
-import by.itacademy.userservice.core.dto.AuditSendDTO;
-import by.itacademy.userservice.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.enums.EssenceType;
+import by.itacademy.userservice.config.properites.JWTProperty;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
 import by.itacademy.userservice.service.api.IAuditInteractService;
 import by.itacademy.userservice.service.feign.AuditServiceClient;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuditInteractService implements IAuditInteractService {
     private final AuditServiceClient auditServiceClient;
     private final JwtTokenHandler jwtHandler;
+    private final JWTProperty property;
     public AuditInteractService(
             AuditServiceClient auditServiceClient,
-            JwtTokenHandler jwtHandler
+            JwtTokenHandler jwtHandler,
+            JWTProperty property
     ) {
         this.auditServiceClient = auditServiceClient;
         this.jwtHandler = jwtHandler;
+        this.property = property;
     }
 
     @Override
-    @Transactional(readOnly = true)
     public void send(UserEntity newEntity, UserShortDTO userShortDTO, String text) {
-        AuditSendDTO auditSendDTO = fillUserSendDTO(userShortDTO, newEntity, text);
-        String bearerToken = "Bearer " + jwtHandler.generateAccessToken("System");
-        auditServiceClient.send(bearerToken, auditSendDTO);
+        AuditCreateDTO auditCreateDTO = fillUserSendDTO(userShortDTO, newEntity, text);
+        String bearerToken = "Bearer " + jwtHandler.generateSystemAccessToken(property.getSystem());
+        auditServiceClient.send(bearerToken, auditCreateDTO);
     }
 
-    private AuditSendDTO fillUserSendDTO(UserShortDTO userShortDTO, UserEntity newEntity, String text) {
-        AuditSendDTO auditSendDTO = new AuditSendDTO();
+    private AuditCreateDTO fillUserSendDTO(UserShortDTO userShortDTO, UserEntity newEntity, String text) {
+        AuditCreateDTO auditCreateDTO = new AuditCreateDTO();
 
         //user, который произвёл операцию
-        auditSendDTO.setUserGeneralDTO(userShortDTO);
+        auditCreateDTO.setUserGeneralDTO(userShortDTO);
 
         //EssenceType для аудита
-        auditSendDTO.setType("USER");
-        auditSendDTO.setText(text);
+        auditCreateDTO.setType(EssenceType.USER);
+        auditCreateDTO.setText(text);
         //id кого создали
-        auditSendDTO.setId(newEntity.getUuid().toString());
+        auditCreateDTO.setId(newEntity.getUuid().toString());
 
-        return auditSendDTO;
+        return auditCreateDTO;
     }
 }
