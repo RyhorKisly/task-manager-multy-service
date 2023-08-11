@@ -1,5 +1,7 @@
 package by.itacademy.userservice.endponts.web;
 
+import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
+import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.userservice.core.dto.*;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
@@ -14,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 @Validated
 @RestController
@@ -55,7 +58,7 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/{uuid}/dt_update/{dt_update}")
+    @GetMapping("/{uuid}/dt_update/{dt_update}")
     public ResponseEntity<?> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
@@ -65,6 +68,14 @@ public class UserController {
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
         userService.update(userCreateDTO, coordinatesDTO);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/validation")
+    public ResponseEntity<?> validate(
+            @RequestBody List<UUID> uuids
+            ) {
+        userService.validate(uuids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

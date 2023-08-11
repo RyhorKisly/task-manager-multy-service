@@ -1,12 +1,13 @@
 package by.itacademy.userservice.service;
 
-import by.itacademy.userservice.core.dto.CoordinatesDTO;
+import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.enums.UserRole;
+import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
+import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.dto.UserCreateDTO;
-import by.itacademy.userservice.core.dto.UserShortDTO;
-import by.itacademy.userservice.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
-import by.itacademy.userservice.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.repositories.IUserDao;
 import by.itacademy.userservice.service.api.IAuditInteractService;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 @Service
 public class UserService implements IUserService {
@@ -34,8 +36,10 @@ public class UserService implements IUserService {
     private static final String WRONG_MAIL_RESPONSE = "Wrong mail";
     private static final String USER_SAVED = "User: %s was created by: %s";
     private static final String USER_UPDATED = "User: %s was updated by: %s";
-
-
+    private static final String NOT_FOUND_SOME_USERS = "There are non-existent users in the query";
+    private static final String NOT_VERIFIED_RESPONSE = "User: %s, is not activated. " +
+            "To activate, follow the link sent to the email specified during registration. " +
+            "If you didn't receive a link, please contact your administrator.";
     private final IUserDao userDao;
     private final PasswordEncoder encoder;
     private final UserHolder holder;
@@ -99,6 +103,13 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public UserEntity get(String mail, UserStatus status) {
+        return userDao.findByMailAndStatus(mail, status)
+                .orElseThrow(() -> new NotActivatedException(String.format(NOT_VERIFIED_RESPONSE, mail)));
+    }
+
+    @Override
     @Transactional
     public void update(UserCreateDTO item, CoordinatesDTO coordinates) {
 
@@ -136,6 +147,13 @@ public class UserService implements IUserService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserEntity> validate(List<UUID> uuids) {
+        List<UserEntity> entities = userDao.findAllById(uuids);
+        validate(entities, uuids);
+        return entities;
+    }
 
     private UserEntity convertDTOToEntity(UserCreateDTO item) {
         UserEntity entity = new UserEntity();
@@ -189,6 +207,17 @@ public class UserService implements IUserService {
             throw new RuntimeException (ex.getMessage(), ex);
         }
         return userEntity;
+    }
+
+    private void validate(List<UserEntity> entities, List<UUID> uuids) {
+        if(entities.size() != uuids.size()) {
+            throw new IllegalArgumentException(NOT_FOUND_SOME_USERS);
+        }
+        for (UserEntity entity : entities) {
+            if(!entity.getStatus().equals(UserStatus.ACTIVATED)) {
+                throw new NotActivatedException(String.format(NOT_VERIFIED_RESPONSE, entity.getUuid()));
+            }
+        }
     }
 
 }
