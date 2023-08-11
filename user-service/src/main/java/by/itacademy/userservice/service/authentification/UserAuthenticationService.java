@@ -116,19 +116,6 @@ public class UserAuthenticationService implements IUserAuthenticationService {
         return userService.get(holder.getUser().getUsername());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserShortDTO getGeneralUser() {
-        UserEntity userEntity = userService.get(holder.getUser().getUsername());
-
-        return new UserShortDTO(
-                userEntity.getUuid(),
-                userEntity.getMail(),
-                userEntity.getFio(),
-                userEntity.getRole()
-        );
-    }
-
     private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
         UserShortDTO userShortDTO = new UserShortDTO();
         userShortDTO.setUuid(entityEntity.getUuid());
