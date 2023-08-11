@@ -67,6 +67,12 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>by.itacademy</groupId>
+            <artifactId>shared-resource</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

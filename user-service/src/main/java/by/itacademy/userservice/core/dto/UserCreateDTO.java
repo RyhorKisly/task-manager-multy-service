@@ -1,8 +1,8 @@
 package by.itacademy.userservice.core.dto;
 
-import by.itacademy.userservice.core.enums.UserRole;
+import by.itacademy.sharedresource.core.enums.UserRole;
+import by.itacademy.sharedresource.core.validatiors.annotations.ValidEmail;
 import by.itacademy.userservice.core.enums.UserStatus;
-import by.itacademy.userservice.core.validatiors.annotations.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

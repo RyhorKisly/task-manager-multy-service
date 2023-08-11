@@ -1,6 +1,6 @@
 package by.itacademy.userservice.service.feign;
 
-import by.itacademy.userservice.core.dto.AuditSendDTO;
+import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 public interface AuditServiceClient {
 
     @PostMapping
-    ResponseEntity<AuditSendDTO> send(
+    ResponseEntity<AuditCreateDTO> send(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
-            @RequestBody AuditSendDTO auditSendDTO
+            @RequestBody AuditCreateDTO auditCreateDTO
             );
 }

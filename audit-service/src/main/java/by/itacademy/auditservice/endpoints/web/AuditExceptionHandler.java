@@ -1,10 +1,11 @@
 package by.itacademy.auditservice.endpoints.web;
 
-import by.itacademy.auditservice.core.enums.ErrorType;
-import by.itacademy.auditservice.core.errors.ErrorMessage;
-import by.itacademy.auditservice.core.errors.ErrorResponse;
-import by.itacademy.auditservice.core.errors.StructuredErrorResponse;
 import by.itacademy.auditservice.core.exceptions.FindEntityException;
+import by.itacademy.sharedresource.core.enums.ErrorType;
+import by.itacademy.sharedresource.core.errors.ErrorMessage;
+import by.itacademy.sharedresource.core.errors.ErrorResponse;
+import by.itacademy.sharedresource.core.errors.StructuredErrorResponse;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,12 +28,13 @@ public class AuditExceptionHandler {
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleInvalidArgument(ConstraintViolationException ex) {
-        StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.structured_error, new ArrayList<>());
-        response.setLogref(ErrorType.structured_error);
+        StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
+        response.setLogref(ErrorType.STRUCTURED_ERROR);
 
-        ex.getConstraintViolations().stream().forEach(violation -> {
-            response.getErrors().add(new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()));
-        });
+        ex.getConstraintViolations().forEach(violation ->
+                response.getErrors().add(new ErrorMessage(
+                        violation.getPropertyPath().toString(), violation.getMessage()))
+        );
 
         LOGGER.error(ex.getMessage(), ex);
 
@@ -43,7 +45,7 @@ public class AuditExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException ex) {
         List<FieldError> errors = ex.getFieldErrors();
-        StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.structured_error, new ArrayList<>());
+        StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
 
         for (FieldError error : errors) {
             response.getErrors().add( new ErrorMessage(error.getField(), error.getDefaultMessage()));
@@ -54,10 +56,13 @@ public class AuditExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageConversionException.class)
-    public ResponseEntity<?> handleBadRequest(HttpMessageConversionException ex) {
+    @ExceptionHandler({
+            HttpMessageConversionException.class,
+            FeignException.class
+    })
+    public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
-        response.setLogref(ErrorType.error);
+        response.setLogref(ErrorType.ERROR);
         response.setMessage("The request contains incorrect data. Change request and try again or contact support!");
         LOGGER.error(ex.getMessage(), ex);
 
@@ -70,7 +75,7 @@ public class AuditExceptionHandler {
     })
     public ResponseEntity<?> handleInvalidArgument(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
-        response.setLogref(ErrorType.error);
+        response.setLogref(ErrorType.ERROR);
         response.setMessage(ex.getMessage());
         LOGGER.error(ex.getMessage(), ex);
 
@@ -81,7 +86,7 @@ public class AuditExceptionHandler {
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = new ErrorResponse();
-        response.setLogref(ErrorType.error);
+        response.setLogref(ErrorType.ERROR);
         response.setMessage("Incorrect characters. Change request and try it again!");
         LOGGER.error(ex.getMessage(), ex);
 
@@ -94,7 +99,7 @@ public class AuditExceptionHandler {
     })
     public ResponseEntity<?> handleInnerError(Exception ex) {
         ErrorResponse response = new ErrorResponse(
-                ErrorType.error,
+                ErrorType.ERROR,
                 "Internal server Error. Please, contact support!"
         );
         LOGGER.error(ex.getMessage(), ex);

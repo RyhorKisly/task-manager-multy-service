@@ -1,8 +1,8 @@
 package by.itacademy.auditservice.service;
 
-import by.itacademy.auditservice.core.dto.UserShortDTO;
 import by.itacademy.auditservice.service.api.IUserInteractService;
 import by.itacademy.auditservice.service.feign.UserServiceClient;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +15,6 @@ public class UserInteractService implements IUserInteractService {
 
     @Override
     public UserShortDTO sendAndGet(String bearerToken) {
-        UserShortDTO userShortDTO = userServiceClient.send("Bearer " + bearerToken).getBody();
-        return userShortDTO;
+        return userServiceClient.send("Bearer " + bearerToken).getBody();
     }
 }

@@ -1,5 +1,6 @@
 package by.itacademy.userservice.endponts.utils;
 
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.userservice.config.properites.JWTProperty;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,11 +19,22 @@ public class JwtTokenHandler {
         this.property = property;
     }
 
-    public String generateAccessToken(UserDetails user) {
-        return generateAccessToken(user.getUsername());
+    public String generateUserAccessToken(UserShortDTO userShortDTO, UserDetails user) {
+        return generateUserAccessToken(userShortDTO, user.getUsername());
     }
 
-    public String generateAccessToken(String name) {
+    public String generateUserAccessToken(UserShortDTO userShortDTO, String name) {
+        return Jwts.builder()
+                .claim(property.getUser(), userShortDTO)
+                .setSubject(name)
+                .setIssuer(property.getIssuer())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7))) // 1 week
+                .signWith(SignatureAlgorithm.HS512, property.getSecret())
+                .compact();
+    }
+
+    public String generateSystemAccessToken(String name) {
         return Jwts.builder()
                 .setSubject(name)
                 .setIssuer(property.getIssuer())
@@ -46,6 +58,14 @@ public class JwtTokenHandler {
 
     public String getUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public UserShortDTO getUser(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(property.getSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("User", UserShortDTO.class);
     }
 
     public Date getExpirationDate(String token) {

@@ -1,35 +1,26 @@
 package by.itacademy.auditservice.endpoints.utils;
 
 import by.itacademy.auditservice.config.properites.JWTProperty;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
 public class JwtTokenHandler {
 
     private final JWTProperty property;
+    private final ObjectMapper objectMapper;
 
-    public JwtTokenHandler(JWTProperty property) {
+    public JwtTokenHandler(
+            JWTProperty property,
+            ObjectMapper objectMapper
+    ) {
         this.property = property;
-    }
-
-    public String generateAccessToken(UserDetails user) {
-        return generateAccessToken(user.getUsername());
-    }
-
-    public String generateAccessToken(String name) {
-        return Jwts.builder()
-                .setSubject(name)
-                .setIssuer(property.getIssuer())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(7))) // 1 week
-                .signWith(SignatureAlgorithm.HS512, property.getSecret())
-                .compact();
+        this.objectMapper = objectMapper;
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -46,6 +37,14 @@ public class JwtTokenHandler {
 
     public String getUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public UserShortDTO getUser(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(property.getSecret())
+                .parseClaimsJws(token)
+                .getBody();
+         return objectMapper.convertValue(claims.get(property.getUser()), UserShortDTO.class);
     }
 
     public Date getExpirationDate(String token) {

@@ -1,13 +1,14 @@
 package by.itacademy.userservice.endponts.web;
 
-import by.itacademy.userservice.core.errors.ErrorMessage;
-import by.itacademy.userservice.core.errors.ErrorResponse;
-import by.itacademy.userservice.core.errors.StructuredErrorResponse;
-import by.itacademy.userservice.core.enums.ErrorType;
+import by.itacademy.sharedresource.core.enums.ErrorType;
+import by.itacademy.sharedresource.core.errors.ErrorMessage;
+import by.itacademy.sharedresource.core.errors.ErrorResponse;
+import by.itacademy.sharedresource.core.errors.StructuredErrorResponse;
+import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
+import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
+import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
-import by.itacademy.userservice.core.exceptions.NotActivatedException;
-import by.itacademy.userservice.core.exceptions.NotVerifiedCoordinatesException;
-import by.itacademy.userservice.core.exceptions.VerificationException;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,10 @@ public class UserExceptionHandler {
         StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
         response.setLogref(ErrorType.STRUCTURED_ERROR);
 
-        ex.getConstraintViolations().stream().forEach(violation -> {
-            response.getErrors().add(new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()));
-        });
+        ex.getConstraintViolations().forEach(violation ->
+                response.getErrors().add(
+                        new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()))
+        );
 
         LOGGER.error(ex.getMessage(), ex);
 
@@ -57,8 +59,11 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(HttpMessageConversionException.class)
-    public ResponseEntity<?> handleBadRequest(HttpMessageConversionException ex) {
+    @ExceptionHandler({
+            HttpMessageConversionException.class,
+            FeignException.class
+    })
+    public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage("The request contains incorrect data. Change request and try again or contact support!");

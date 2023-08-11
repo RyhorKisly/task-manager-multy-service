@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>shared-resource</module>
         <module>user-service</module>
         <module>audit-service</module>
         <module>comments-service</module>

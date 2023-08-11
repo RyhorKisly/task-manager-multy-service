@@ -1,7 +1,7 @@
 package by.itacademy.auditservice.endpoints.web;
 
-import by.itacademy.auditservice.core.dto.AuditCreateDTO;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
+import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

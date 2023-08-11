@@ -1,6 +1,6 @@
 package by.itacademy.userservice.core.dto;
 
-import by.itacademy.userservice.core.validatiors.annotations.ValidEmail;
+import by.itacademy.sharedresource.core.validatiors.annotations.ValidEmail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

@@ -27,6 +27,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
+                                .requestMatchers("/users/validation").hasAnyRole("SYSTEM")
                                 .requestMatchers("/users/registration").permitAll()
                                 .requestMatchers("/users/login").permitAll()
                                 .requestMatchers("/users/verification").permitAll()

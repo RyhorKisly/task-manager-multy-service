@@ -1,6 +1,6 @@
 package by.itacademy.auditservice.dao.entity;
 
-import by.itacademy.auditservice.core.enums.UserRole;
+import by.itacademy.sharedresource.core.enums.UserRole;
 import jakarta.persistence.*;
 
 import java.util.UUID;

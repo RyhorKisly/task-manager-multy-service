@@ -1,11 +1,11 @@
 package by.itacademy.userservice.service.authentification;
 
-import by.itacademy.userservice.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
+import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.userservice.core.dto.UserLoginDTO;
 import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.enums.UserStatus;
-import by.itacademy.userservice.core.exceptions.NotActivatedException;
-import by.itacademy.userservice.core.exceptions.VerificationException;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.entity.VerificationEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
@@ -98,7 +98,7 @@ public class UserAuthenticationService implements IUserAuthenticationService {
     @Override
     @Transactional(readOnly = true)
     public String authorize(UserLoginDTO userLoginDTO) {
-        UserEntity userEntity = userService.get(userLoginDTO.getMail());
+        UserEntity userEntity = userService.get(userLoginDTO.getMail(), UserStatus.ACTIVATED);
 
         if(!encoder.matches(userLoginDTO.getPassword(), userEntity.getPassword())){
             throw new IllegalArgumentException(WRONG_PASSWORD_RESPONSE);
@@ -107,26 +107,13 @@ public class UserAuthenticationService implements IUserAuthenticationService {
             throw new NotActivatedException(NOT_VERIFIED_RESPONSE);
         }
 
-        return jwtHandler.generateAccessToken(userEntity.getMail());
+        return jwtHandler.generateUserAccessToken(fillUserShortDTO(userEntity), userEntity.getMail());
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserEntity getUser() {
         return userService.get(holder.getUser().getUsername());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserShortDTO getGeneralUser() {
-        UserEntity userEntity = userService.get(holder.getUser().getUsername());
-
-        return new UserShortDTO(
-                userEntity.getUuid(),
-                userEntity.getMail(),
-                userEntity.getFio(),
-                userEntity.getRole()
-        );
     }
 
     private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
