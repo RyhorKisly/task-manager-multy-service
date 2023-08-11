@@ -15,7 +15,6 @@ public class UserInteractService implements IUserInteractService {
 
     @Override
     public UserShortDTO sendAndGet(String bearerToken) {
-        UserShortDTO userShortDTO = userServiceClient.send("Bearer " + bearerToken).getBody();
-        return userShortDTO;
+        return userServiceClient.send("Bearer " + bearerToken).getBody();
     }
 }

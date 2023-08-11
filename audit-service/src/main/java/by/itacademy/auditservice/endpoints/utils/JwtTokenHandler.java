@@ -4,11 +4,9 @@ import by.itacademy.auditservice.config.properites.JWTProperty;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component

@@ -41,13 +41,15 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<UserDTO>> getPages(
+    public ResponseEntity<?> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
     ) {
         Page<UserEntity> pageOfUsers =  userService.get(PageRequest.of(page, size));
-        PageDTO<UserDTO> pageDTO = conversionService.convert(pageOfUsers, PageDTO.class);
-        return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+        return new ResponseEntity<>(
+                conversionService.convert(pageOfUsers, PageDTO.class),
+                HttpStatus.OK
+        );
     }
  
       @GetMapping("/{uuid}")

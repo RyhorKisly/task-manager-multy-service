@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 public class EmailValidator
         implements ConstraintValidator<ValidEmail, String> {
 
-    private Pattern pattern;
-    private Matcher matcher;
     private static final String EMAIL_PATTERN = "[^@]+@[^@]+\\.[^@.]+";
     @Override
     public void initialize(ValidEmail constraintAnnotation) {
@@ -22,8 +20,8 @@ public class EmailValidator
         return (validateEmail(email));
     }
     private boolean validateEmail(String email) {
-        pattern = Pattern.compile(EMAIL_PATTERN);
-        matcher = pattern.matcher(email);
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
 }

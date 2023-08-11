@@ -3,7 +3,6 @@ package by.itacademy.auditservice.core.converters;
 import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
-import by.itacademy.sharedresource.core.enums.EssenceType;
 import org.springframework.core.convert.converter.Converter;
 
 import java.time.ZoneId;

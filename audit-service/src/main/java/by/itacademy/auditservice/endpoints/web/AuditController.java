@@ -38,8 +38,10 @@ public class AuditController {
     ) {
         Page<AuditEntity> pageOfAudit =  auditService.get(PageRequest.of(page, size));
 
-         PageDTO<AuditDTO> pageDTO = conversionService.convert(pageOfAudit, PageDTO.class);
-        return new ResponseEntity<>(pageDTO, HttpStatus.OK);
+        return new ResponseEntity<>(
+                conversionService.convert(pageOfAudit, PageDTO.class),
+                HttpStatus.OK
+        );
     }
 
     @GetMapping("/{uuid}")

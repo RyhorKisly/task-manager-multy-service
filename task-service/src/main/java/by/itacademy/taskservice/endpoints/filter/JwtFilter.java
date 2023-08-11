@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,8 +38,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain chain)
             throws ServletException, IOException {
 
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -54,8 +55,6 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String userName = jwtHandler.getUsername(token);
-
         UserShortDTO userShortDTO = userInteractService.sendAndGet(token);
         UserDetails userDetails = User.builder()
                 .username(userShortDTO.getMail())
@@ -66,8 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken
                 authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null,
-                userDetails == null ?
-                        List.of() : userDetails.getAuthorities()
+                userDetails.getAuthorities()
         );
 
         authentication.setDetails(

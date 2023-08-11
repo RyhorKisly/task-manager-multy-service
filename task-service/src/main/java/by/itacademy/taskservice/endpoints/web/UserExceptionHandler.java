@@ -34,9 +34,10 @@ public class UserExceptionHandler {
         StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
         response.setLogref(ErrorType.STRUCTURED_ERROR);
 
-        ex.getConstraintViolations().stream().forEach(violation -> {
-            response.getErrors().add(new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()));
-        });
+        ex.getConstraintViolations().forEach(violation ->
+                response.getErrors().add(
+                        new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()))
+        );
 
         LOGGER.error(ex.getMessage(), ex);
 
