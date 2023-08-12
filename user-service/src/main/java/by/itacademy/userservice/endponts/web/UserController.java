@@ -60,7 +60,7 @@ public class UserController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/{uuid}/dt_update/{dt_update}")
+    @PutMapping("/{uuid}/dt_update/{dt_update}")
     public ResponseEntity<?> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,

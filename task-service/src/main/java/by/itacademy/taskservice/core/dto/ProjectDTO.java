@@ -2,38 +2,66 @@ package by.itacademy.taskservice.core.dto;
 
 import by.itacademy.sharedresource.core.dto.UserRefDTO;
 import by.itacademy.taskservice.core.enums.ProjectStatus;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.UUID;
 
-public class ProjectCreateDTO {
-    @NotBlank
+public class ProjectDTO {
+    private UUID uuid;
+    private Long dtCreate;
+
+    private Long dtUpdate;
     private String name;
-    @NotBlank
     private String description;
-    @NotNull
     private UserRefDTO manager;
-    @NotNull
     private List<UserRefDTO> staff;
-    @NotNull
     private ProjectStatus status;
 
-    public ProjectCreateDTO() {
+    public ProjectDTO() {
     }
 
-    public ProjectCreateDTO(
+    public ProjectDTO(
+            UUID uuid,
+            Long dtCreate,
+            Long dtUpdate,
             String name,
             String description,
             UserRefDTO manager,
             List<UserRefDTO> staff,
             ProjectStatus status
     ) {
+        this.uuid = uuid;
+        this.dtCreate = dtCreate;
+        this.dtUpdate = dtUpdate;
         this.name = name;
         this.description = description;
         this.manager = manager;
         this.staff = staff;
         this.status = status;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public Long getDtCreate() {
+        return dtCreate;
+    }
+
+    public void setDtCreate(Long dtCreate) {
+        this.dtCreate = dtCreate;
+    }
+
+    public Long getDtUpdate() {
+        return dtUpdate;
+    }
+
+    public void setDtUpdate(Long dtUpdate) {
+        this.dtUpdate = dtUpdate;
     }
 
     public String getName() {
