@@ -14,6 +14,7 @@ public class ProjectCreateDTO {
     private String description;
     @NotNull
     private UserRefDTO manager;
+    @NotNull
     private List<UserRefDTO> staff;
     @NotNull
     private ProjectStatus status;

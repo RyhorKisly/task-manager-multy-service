@@ -60,8 +60,7 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler({
-                    HttpMessageConversionException.class,
-                    FeignException.class
+                    HttpMessageConversionException.class
     })
     public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
