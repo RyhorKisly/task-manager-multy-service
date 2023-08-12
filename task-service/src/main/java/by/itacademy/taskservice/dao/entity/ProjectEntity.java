@@ -7,13 +7,13 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "projects", schema = "app")
 public class ProjectEntity {
     @Id
+    @Column(name = "project_id")
     private UUID uuid;
     @CreationTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
@@ -25,12 +25,16 @@ public class ProjectEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "manger_id")
     private UUID manager;
-    @ElementCollection
-    @CollectionTable(name = "projects_staff", joinColumns = @JoinColumn(name = "project_uuid"))
-    @Column(name = "staff_uuid")
+
+    @Column(name = "staff_id")
     private List<UUID> staff;
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
