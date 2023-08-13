@@ -4,13 +4,13 @@ import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.sharedresource.core.dto.UserRefDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
+import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.domain.Page;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class PageToPageDTOConverter implements Converter<Page<ProjectEntity>, PageDTO<ProjectDTO>> {
     @Override
@@ -32,8 +32,8 @@ public class PageToPageDTOConverter implements Converter<Page<ProjectEntity>, Pa
         List<ProjectDTO> projectDTOS = new ArrayList<>();
         for (ProjectEntity entity : page.getContent()) {
             List<UserRefDTO> userRefDTOS = new ArrayList<>();
-            for (UUID staff : entity.getStaff()) {
-                userRefDTOS.add(new UserRefDTO(staff));
+            for (UserRefEntity staff : entity.getStaff()) {
+                userRefDTOS.add(new UserRefDTO(staff.getUuid()));
             }
             ProjectDTO dto = new ProjectDTO();
             dto.setUuid(entity.getUuid());
@@ -41,7 +41,7 @@ public class PageToPageDTOConverter implements Converter<Page<ProjectEntity>, Pa
             dto.setDtUpdate(entity.getDtUpdate().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             dto.setName(entity.getName());
             dto.setDescription(entity.getDescription());
-            dto.setManager(new UserRefDTO(entity.getUuid()));
+            dto.setManager(new UserRefDTO(entity.getManager().getUuid()));
             dto.setStaff(userRefDTOS);
             dto.setStatus(entity.getStatus());
 

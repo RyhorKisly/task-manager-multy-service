@@ -3,12 +3,14 @@ package by.itacademy.taskservice.service;
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
 import by.itacademy.sharedresource.core.dto.UserRefDTO;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
+import by.itacademy.sharedresource.core.enums.EssenceType;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.enums.ProjectStatus;
 import by.itacademy.taskservice.core.exceptions.FindEntityException;
 import by.itacademy.taskservice.core.exceptions.UndefinedDBEntityException;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
+import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import by.itacademy.taskservice.dao.repositories.IProjectsDao;
 import by.itacademy.taskservice.endpoints.utils.JwtTokenHandler;
 import by.itacademy.taskservice.service.api.IAuditInteractService;
@@ -19,7 +21,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -53,12 +54,15 @@ public class ProjectService implements IProjectService {
 
     @Override
     @Transactional
-    public ProjectEntity create(ProjectCreateDTO dto, String bearerToken) {
+    public ProjectEntity create(ProjectCreateDTO dto, String token) {
         ProjectEntity entity = convertDTOToEntity(dto);
-        String token = bearerToken.split(" ")[1].trim();
 
-        List<UUID> uuids = new ArrayList<>(entity.getStaff());
-        uuids.add(entity.getManager());
+        List<UserRefEntity> userRefEntities = new ArrayList<>(entity.getStaff());
+        userRefEntities.add(entity.getManager());
+        List<UUID> uuids = new ArrayList<>();
+        for (UserRefEntity userRefEntity : userRefEntities) {
+            uuids.add(userRefEntity.getUuid());
+        }
 
         //TODO  1. объединять отправку проверки участников проекта и получение юзера для отправки аудита или нет
         //      2. оставить раздельно два хождения на user-service
@@ -69,10 +73,10 @@ public class ProjectService implements IProjectService {
         UserShortDTO userShortDTO = userInteractService.sendAndGet(token);
 
         //TODO  3. или может лучше использовать информацию из токена (Я в него вложил UserShortDTO)
-//        UserShortDTO userShortDTO = jwtHandler.getUser(token);
+//      UserShortDTO userShortDTO = jwtHandler.getUser(token);
 
         String text =  String.format(PROJECT_CREATED, dto.getName());
-        auditInteractService.send(userShortDTO, entity.getUuid(),text);
+        auditInteractService.send(userShortDTO, entity.getUuid(), text, EssenceType.PROJECT);
 
         return entity;
     }
@@ -98,9 +102,13 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
+    public boolean ifExist(UUID project, UUID implementer) {
+        return projectsDao.existsByUuidAndStaffUuidOrManagerUuid(project, implementer, implementer);
+    }
+
+    @Override
     @Transactional
-    public ProjectEntity update(ProjectCreateDTO dto, CoordinatesDTO coordinates, String bearerToken) {
-        String token = bearerToken.split(" ")[1].trim();
+    public ProjectEntity update(ProjectCreateDTO dto, CoordinatesDTO coordinates, String token) {
         ProjectEntity entity = projectsDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(PROJECT_NOT_EXIST_RESPONSE));
 
@@ -120,18 +128,23 @@ public class ProjectService implements IProjectService {
 
         UserShortDTO userShortDTO = jwtHandler.getUser(token);
         String text =  String.format(PROJECT_UPDATED, dto.getName());
-        auditInteractService.send(userShortDTO, entity.getUuid(),text);
+        auditInteractService.send(userShortDTO, entity.getUuid(),text, EssenceType.PROJECT);
 
         return entity;
     }
 
     private ProjectEntity convertDTOToEntity(ProjectCreateDTO dto) {
+        List<UserRefEntity> userRefEntities = new ArrayList<>();
+        for (UserRefDTO staff : dto.getStaff()) {
+            userRefEntities.add(new UserRefEntity(staff.getUuid()));
+        }
+
         ProjectEntity entity = new ProjectEntity();
         entity.setUuid(UUID.randomUUID());
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
-        entity.setManager(dto.getManager().getUuid());
-        entity.setStaff(dto.getStaff().stream().map(UserRefDTO::getUuid).toList());
+        entity.setManager(new UserRefEntity(dto.getManager().getUuid()));
+        entity.setStaff(userRefEntities);
         entity.setStatus(dto.getStatus());
         return entity;
     }
@@ -152,15 +165,15 @@ public class ProjectService implements IProjectService {
     }
 
     private void setFieldsToUpdate(ProjectEntity entity, ProjectCreateDTO dto) {
-        List<UUID> uuids = new ArrayList<>();
+        List<UserRefEntity> userRefEntities = new ArrayList<>();
         for (UserRefDTO staff : dto.getStaff()) {
-            uuids.add(staff.getUuid());
+            userRefEntities.add(new UserRefEntity(staff.getUuid()));
         }
 
-        entity.setStaff(uuids);
+        entity.setStaff(userRefEntities);
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
-        entity.setManager(dto.getManager().getUuid());
+        entity.setManager(new UserRefEntity(dto.getManager().getUuid()));
         entity.setStatus(dto.getStatus());
     }
 

@@ -17,7 +17,6 @@ spring:
   config:
     import: confidential.yml
 
-
 logging:
   level:
     org:
@@ -34,3 +33,4 @@ server:
 
 app:
   user-verification-path: http://localhost:8080/users/verification
+  audit-url: http://localhost:8081/audit

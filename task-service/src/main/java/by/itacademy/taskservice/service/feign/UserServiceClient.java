@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 //TODO переместить запись урла в файл с пропертями
-@FeignClient(value = "user-service", url = "http://localhost:8080/users")
+@FeignClient(value = "user-service", url = "${app.user-url}")
 public interface UserServiceClient {
 
     @GetMapping("/me")

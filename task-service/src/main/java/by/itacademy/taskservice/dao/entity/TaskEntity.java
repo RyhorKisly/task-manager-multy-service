@@ -1,17 +1,16 @@
 package by.itacademy.taskservice.dao.entity;
 
-import by.itacademy.taskservice.core.enums.ProjectStatus;
+import by.itacademy.taskservice.core.enums.TaskStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.UUID;
 @Entity
-@Table(name = "projects", schema = "app")
-public class ProjectEntity {
+@Table(name = "tasks", schema = "app")
+public class TaskEntity {
     @Id
     private UUID uuid;
     @CreationTimestamp(source = SourceType.DB)
@@ -24,36 +23,34 @@ public class ProjectEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
-    private String name;
+    private UUID project;
+    private String title;
     private String description;
-    @ManyToOne(cascade = CascadeType.ALL)
-    private UserRefEntity manager;
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<UserRefEntity> staff;
     @Enumerated(EnumType.STRING)
-    private ProjectStatus status;
+    private TaskStatus status;
+    private UUID implementer;
 
-    public ProjectEntity() {
+    public TaskEntity() {
     }
 
-    public ProjectEntity(
+    public TaskEntity(
             UUID uuid,
             LocalDateTime dtCreate,
             LocalDateTime dtUpdate,
-            String name,
+            UUID project,
+            String title,
             String description,
-            UserRefEntity manager,
-            List<UserRefEntity> staff,
-            ProjectStatus status
+            TaskStatus status,
+            UUID implementer
     ) {
         this.uuid = uuid;
         this.dtCreate = dtCreate;
         this.dtUpdate = dtUpdate;
-        this.name = name;
+        this.project = project;
+        this.title = title;
         this.description = description;
-        this.manager = manager;
-        this.staff = staff;
         this.status = status;
+        this.implementer = implementer;
     }
 
     public UUID getUuid() {
@@ -80,12 +77,20 @@ public class ProjectEntity {
         this.dtUpdate = dtUpdate;
     }
 
-    public String getName() {
-        return name;
+    public UUID getProject() {
+        return project;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProject(UUID project) {
+        this.project = project;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -96,27 +101,19 @@ public class ProjectEntity {
         this.description = description;
     }
 
-    public UserRefEntity getManager() {
-        return manager;
-    }
-
-    public void setManager(UserRefEntity manager) {
-        this.manager = manager;
-    }
-
-    public List<UserRefEntity> getStaff() {
-        return staff;
-    }
-
-    public void setStaff(List<UserRefEntity> staff) {
-        this.staff = staff;
-    }
-
-    public ProjectStatus getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ProjectStatus status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
+    }
+
+    public UUID getImplementer() {
+        return implementer;
+    }
+
+    public void setImplementer(UUID implementer) {
+        this.implementer = implementer;
     }
 }

@@ -23,23 +23,37 @@ public class AuditInteractService
         this.auditServiceClient = auditServiceClient;
         this.jwtHandler = jwtHandler;
     }
-
+//TODO Eсли Илья даст дабро брать инфу юзера из токена, то удалить этот метод и использовать тот который нижe
     @Override
-    public void send(UserShortDTO userShortDTO, UUID projectUuid, String text) {
+    public void send(UserShortDTO userShortDTO, UUID projectUuid, String text, EssenceType essenceType) {
 
-        AuditCreateDTO auditCreateDTO = fillUserSendDTO(userShortDTO, projectUuid, text);
+        AuditCreateDTO auditCreateDTO = fillUserSendDTO(userShortDTO, projectUuid, text, essenceType);
         String bearerToken = "Bearer " + jwtHandler.generateSystemAccessToken("System");
         auditServiceClient.send(bearerToken, auditCreateDTO);
     }
 
-    private AuditCreateDTO fillUserSendDTO(UserShortDTO userShortDTO, UUID projectUuid, String text) {
+    @Override
+    public void send(UUID projectUuid, String text, String token, EssenceType essenceType) {
+        UserShortDTO userShortDTO = jwtHandler.getUser(token);
+
+        AuditCreateDTO auditCreateDTO = fillUserSendDTO(userShortDTO, projectUuid, text, essenceType);
+        String bearerToken = "Bearer " + jwtHandler.generateSystemAccessToken("System");
+        auditServiceClient.send(bearerToken, auditCreateDTO);
+    }
+
+    private AuditCreateDTO fillUserSendDTO(
+            UserShortDTO userShortDTO,
+            UUID projectUuid,
+            String text,
+            EssenceType essenceType
+    ) {
         AuditCreateDTO auditCreateDTO = new AuditCreateDTO();
 
         //user, который произвёл операцию
         auditCreateDTO.setUserShortDTO(userShortDTO);
 
         //EssenceType для аудита
-        auditCreateDTO.setType(EssenceType.PROJECT);
+        auditCreateDTO.setType(essenceType);
         auditCreateDTO.setText(text);
         //id кого создали
         auditCreateDTO.setId(projectUuid.toString());
