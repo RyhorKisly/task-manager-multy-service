@@ -11,9 +11,10 @@ import org.springframework.validation.annotation.Validated;
 import java.util.UUID;
 @Validated
 public interface IProjectService {
-    ProjectEntity create(@Valid ProjectCreateDTO dto, String bearerToken);
+    ProjectEntity create(@Valid ProjectCreateDTO dto, String token);
     Page<ProjectEntity> get(PageRequest pageRequest, boolean archived);
     ProjectEntity get(UUID uuid);
-    ProjectEntity update(@Valid ProjectCreateDTO dto, CoordinatesDTO coordinatesDTO, String bearerToken);
+    boolean ifExist(UUID project, UUID implementer);
+    ProjectEntity update(@Valid ProjectCreateDTO dto, CoordinatesDTO coordinatesDTO, String token);
 
 }

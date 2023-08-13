@@ -41,7 +41,7 @@ public class ProjectController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
             @RequestBody @Valid ProjectCreateDTO projectCreateDTO
             ) {
-        projectService.create(projectCreateDTO, bearerToken);
+        projectService.create(projectCreateDTO, bearerToken.split(" ")[1].trim());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -76,7 +76,7 @@ public class ProjectController {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
-        projectService.update(projectCreateDTO, coordinatesDTO, bearerToken);
+        projectService.update(projectCreateDTO, coordinatesDTO, bearerToken.split(" ")[1].trim());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

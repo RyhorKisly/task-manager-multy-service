@@ -13,7 +13,6 @@ import java.util.*;
 @Table(name = "projects", schema = "app")
 public class ProjectEntity {
     @Id
-    @Column(name = "project_id")
     private UUID uuid;
     @CreationTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
@@ -25,17 +24,12 @@ public class ProjectEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "manger_id")
-    private UUID manager;
-
-    @Column(name = "staff_id")
-    private List<UUID> staff;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private UserRefEntity manager;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<UserRefEntity> staff;
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
@@ -48,8 +42,8 @@ public class ProjectEntity {
             LocalDateTime dtUpdate,
             String name,
             String description,
-            UUID manager,
-            List<UUID> staff,
+            UserRefEntity manager,
+            List<UserRefEntity> staff,
             ProjectStatus status
     ) {
         this.uuid = uuid;
@@ -102,19 +96,19 @@ public class ProjectEntity {
         this.description = description;
     }
 
-    public UUID getManager() {
+    public UserRefEntity getManager() {
         return manager;
     }
 
-    public void setManager(UUID manager) {
+    public void setManager(UserRefEntity manager) {
         this.manager = manager;
     }
 
-    public List<UUID> getStaff() {
+    public List<UserRefEntity> getStaff() {
         return staff;
     }
 
-    public void setStaff(List<UUID> staff) {
+    public void setStaff(List<UserRefEntity> staff) {
         this.staff = staff;
     }
 

@@ -2,8 +2,8 @@ package by.itacademy.taskservice.core.converters;
 
 import by.itacademy.sharedresource.core.dto.UserRefDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
-import by.itacademy.taskservice.core.enums.ProjectStatus;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
+import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import org.springframework.core.convert.converter.Converter;
 
 import java.lang.annotation.Annotation;
@@ -16,8 +16,8 @@ public class ProjectEntityToProjectDTOConverter implements Converter<ProjectEnti
     @Override
     public ProjectDTO convert(ProjectEntity entity) {
         List<UserRefDTO> userRefDTOS = new ArrayList<>();
-        for (UUID staff : entity.getStaff()) {
-            userRefDTOS.add(new UserRefDTO(staff));
+        for (UserRefEntity staff : entity.getStaff()) {
+            userRefDTOS.add(new UserRefDTO(staff.getUuid()));
         }
 
         ProjectDTO dto = new ProjectDTO();
@@ -26,7 +26,7 @@ public class ProjectEntityToProjectDTOConverter implements Converter<ProjectEnti
         dto.setDtUpdate(entity.getDtUpdate().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
-        dto.setManager(new UserRefDTO(entity.getUuid()));
+        dto.setManager(new UserRefDTO(entity.getManager().getUuid()));
         dto.setStaff(userRefDTOS);
         dto.setStatus(entity.getStatus());
 
