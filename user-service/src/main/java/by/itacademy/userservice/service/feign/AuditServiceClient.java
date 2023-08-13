@@ -6,7 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 //TODO переместить запись урла в файл с пропертями
-@FeignClient(value = "audit-service", url = "http://localhost:8081/audit")
+@FeignClient(value = "audit-service", url = "${app.audit-url}")
 public interface AuditServiceClient {
 
     @PostMapping

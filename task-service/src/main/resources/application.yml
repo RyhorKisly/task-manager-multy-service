@@ -12,7 +12,7 @@ spring:
   jpa:
     open-in-view: true
 #    hibernate:
-#    ddl-auto: create
+#      ddl-auto: create
 
   config:
     import: confidential.yml
@@ -30,3 +30,7 @@ logging:
 
 server:
   port: 8082
+
+app:
+  user-url: http://localhost:8080/users
+  audit-url: http://localhost:8081/audit
