@@ -13,6 +13,20 @@ import java.util.List;
 public class PageToPageDTOConverter implements Converter<Page<UserEntity>, PageDTO<UserDTO>> {
     @Override
     public PageDTO<UserDTO> convert(Page<UserEntity> page) {
+        PageDTO<UserDTO> pageDTO = new PageDTO<>();
+        pageDTO.setNumber(page.getNumber());
+        pageDTO.setSize(page.getSize());
+        pageDTO.setTotalPage(page.getTotalPages());
+        pageDTO.setTotalElements(page.getTotalElements());
+        pageDTO.setFirst(page.isFirst());
+        pageDTO.setNumberOfElements(page.getNumberOfElements());
+        pageDTO.setLast(page.isLast());
+        pageDTO.setContent(convertEntitiesToDTOs(page));
+
+        return pageDTO;
+    }
+
+    private List<UserDTO> convertEntitiesToDTOs(Page<UserEntity> page) {
         List<UserDTO> userDTOS = new ArrayList<>();
         for (UserEntity entity : page.getContent()) {
             UserDTO userDTO = new UserDTO();
@@ -31,18 +45,7 @@ public class PageToPageDTOConverter implements Converter<Page<UserEntity>, PageD
             userDTO.setStatus(entity.getStatus());
             userDTOS.add(userDTO);
         }
-
-        PageDTO<UserDTO> pageDTO = new PageDTO<>();
-        pageDTO.setNumber(page.getNumber());
-        pageDTO.setSize(page.getSize());
-        pageDTO.setTotalPage(page.getTotalPages());
-        pageDTO.setTotalElements(page.getTotalElements());
-        pageDTO.setFirst(page.isFirst());
-        pageDTO.setNumberOfElements(page.getNumberOfElements());
-        pageDTO.setLast(page.isLast());
-        pageDTO.setContent(userDTOS);
-
-        return pageDTO;
+        return userDTOS;
     }
 
 
