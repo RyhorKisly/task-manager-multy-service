@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-//TODO переместить запись урла в файл с пропертями
 @FeignClient(value = "user-service", url = "${app.user-url}")
 public interface UserServiceClient {
 
