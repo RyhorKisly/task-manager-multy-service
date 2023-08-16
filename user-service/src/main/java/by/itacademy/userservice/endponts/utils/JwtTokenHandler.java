@@ -19,13 +19,13 @@ public class JwtTokenHandler {
         this.property = property;
     }
 
-    public String generateUserAccessToken(UserShortDTO userShortDTO, UserDetails user) {
-        return generateUserAccessToken(userShortDTO, user.getUsername());
+    public String generateUserAccessToken(UserShortDTO dto) {
+        return generateUserAccessToken(dto, dto.getMail());
     }
 
-    public String generateUserAccessToken(UserShortDTO userShortDTO, String name) {
+    public String generateUserAccessToken(UserShortDTO dto, String name) {
         return Jwts.builder()
-                .claim(property.getUser(), userShortDTO)
+                .claim(property.getUser(), dto)
                 .setSubject(name)
                 .setIssuer(property.getIssuer())
                 .setIssuedAt(new Date())

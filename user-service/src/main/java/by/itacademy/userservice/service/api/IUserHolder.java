@@ -1,7 +1,7 @@
 package by.itacademy.userservice.service.api;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import by.itacademy.userservice.core.dto.UserDTO;
 
 public interface IUserHolder {
-    UserDetails getUser();
+    UserDTO getUser();
 }
