@@ -30,3 +30,6 @@ logging:
 
 server:
   port: 8081
+
+app:
+  user-url: http://localhost:8080/users

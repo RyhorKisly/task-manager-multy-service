@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,17 +56,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        UserShortDTO userShortDTO = userInteractService.sendAndGet(token);
-        UserDetails userDetails = User.builder()
-                .username(userShortDTO.getMail())
-                .password("123")
-                .roles(userShortDTO.getRole().name())
-                .build();
+        UserShortDTO dto = userInteractService.sendAndGet(token);
 
         UsernamePasswordAuthenticationToken
                 authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null,
-                userDetails.getAuthorities()
+                dto, null,
+                dto.getRole() == null ? List.of() : List.of(new SimpleGrantedAuthority("ROLE_" + dto.getRole().name()))
         );
 
         authentication.setDetails(

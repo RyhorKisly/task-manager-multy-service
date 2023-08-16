@@ -4,6 +4,7 @@ import by.itacademy.taskservice.endpoints.filter.JwtFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,8 +28,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/project/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET,"/project").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/project").hasAnyRole("ADMIN")
+                                .requestMatchers("/project/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET,"/task").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers("/task").hasAnyRole("ADMIN")
+                                .requestMatchers("/task/**").hasAnyRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

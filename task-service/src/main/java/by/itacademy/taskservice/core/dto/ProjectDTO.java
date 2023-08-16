@@ -9,7 +9,6 @@ import java.util.UUID;
 public class ProjectDTO {
     private UUID uuid;
     private Long dtCreate;
-
     private Long dtUpdate;
     private String name;
     private String description;

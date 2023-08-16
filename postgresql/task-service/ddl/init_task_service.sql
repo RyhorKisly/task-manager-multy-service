@@ -22,81 +22,34 @@ CREATE TABLE app.tasks
     CONSTRAINT tasks_title_unique UNIQUE (title)
 );
 
--- ProjectEntityFromDzmitry ---------------------------
-
--- CREATE TABLE app.projects
--- (
---     uuid uuid,
---     dt_create timestamp(6) without time zone,
---     dt_update timestamp(6) without time zone,
---     name character varying(255) NOT NULL,
---     description character varying(255) NOT NULL,
---     manager uuid,
---     staff uuid[],
---     status character varying(255) NOT NULL,
---     PRIMARY KEY (uuid),
---     CONSTRAINT projects_name_unique UNIQUE (name)
--- );
-
-
-
--- ProjectEntityNew ---------------------------
-
 CREATE TABLE IF NOT EXISTS app.user_ref_entity
 (
     id bigint NOT NULL,
     uuid uuid NOT NULL,
-    CONSTRAINT user_ref_entity_pkey PRIMARY KEY (uuid)
+    CONSTRAINT user_ref_entity_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE app.projects
 (
-    uuid uuid,
+    uuid uuid NOT NULL,
     dt_create timestamp without time zone NOT NULL,
     dt_update timestamp without time zone NOT NULL,
     name text NOT NULL,
     description text NOT NULL,
-    manager uuid NOT NULL,
+    manager bigint NOT NULL,
     status text,
-    PRIMARY KEY (uuid),
-    CONSTRAINT projects_name_unique UNIQUE (name),
-    CONSTRAINT user_ref_entity_projects_manager_fkey FOREIGN KEY (manager)
-        REFERENCES app.user_ref_entity (uuid)
+    CONSTRAINT projects_pkey PRIMARY KEY (uuid),
+    CONSTRAINT user_ref_projects_manager_fkey FOREIGN KEY (manager)
+        REFERENCES app.user_ref_entity (id),
+    CONSTRAINT projects_name_unique UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS app.projects_staff
 (
     project_uuid uuid NOT NULL,
-    staff_uuid uuid,
+    staff_uuid bigint,
     CONSTRAINT projects_staff_project_uuid_fkey FOREIGN KEY (project_uuid)
         REFERENCES app.projects (uuid),
-    CONSTRAINT user_ref_entity_staff_staff_uuid_fkey FOREIGN KEY (staff_uuid)
-        REFERENCES app.user_ref_entity (uuid)
+    CONSTRAINT user_ref_staff_uuid_fkey FOREIGN KEY (staff_uuid)
+        REFERENCES app.user_ref_entity (id)
 );
-
-
-
--- ProjectEntityOld ---------------------------
-
--- CREATE TABLE app.projects
--- (
---     uuid uuid,
---     dt_create timestamp without time zone NOT NULL,
---     dt_update timestamp without time zone NOT NULL,
---     name text NOT NULL,
---     description text NOT NULL,
---     manager uuid NOT NULL,
---     status text,
---     PRIMARY KEY (uuid),
---     CONSTRAINT projects_name_unique UNIQUE (name),
---     constraint projects_status_check
---         check ((status)::text = ANY ((ARRAY ['ACTIVE'::character varying, 'ARCHIVED'::character varying])::text[]))
--- );
-
--- CREATE TABLE IF NOT EXISTS app.projects_staff
--- (
---     project_uuid uuid NOT NULL,
---     staff_uuid uuid,
---     CONSTRAINT projects_staff_project_uuid_fkey FOREIGN KEY (project_uuid)
---         REFERENCES app.projects (uuid)
--- )

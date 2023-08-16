@@ -5,6 +5,7 @@ import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.sharedresource.core.enums.EssenceType;
 import by.itacademy.taskservice.endpoints.utils.JwtTokenHandler;
 import by.itacademy.taskservice.service.api.IAuditInteractService;
+import by.itacademy.taskservice.service.api.IUserHolder;
 import by.itacademy.taskservice.service.feign.AuditServiceClient;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +17,15 @@ public class AuditInteractService
 {
     private final AuditServiceClient auditServiceClient;
     private final JwtTokenHandler jwtHandler;
+    private final IUserHolder holder;
     public AuditInteractService(
             AuditServiceClient auditServiceClient,
-            JwtTokenHandler jwtHandler
+            JwtTokenHandler jwtHandler,
+            IUserHolder holder
     ) {
         this.auditServiceClient = auditServiceClient;
         this.jwtHandler = jwtHandler;
+        this.holder = holder;
     }
 //TODO Eсли Илья даст дабро брать инфу юзера из токена, то удалить этот метод и использовать тот который нижe
     @Override
@@ -33,8 +37,8 @@ public class AuditInteractService
     }
 
     @Override
-    public void send(UUID projectUuid, String text, String token, EssenceType essenceType) {
-        UserShortDTO userShortDTO = jwtHandler.getUser(token);
+    public void send(UUID projectUuid, String text, EssenceType essenceType) {
+        UserShortDTO userShortDTO = holder.getUser();
 
         AuditCreateDTO auditCreateDTO = fillUserSendDTO(userShortDTO, projectUuid, text, essenceType);
         String bearerToken = "Bearer " + jwtHandler.generateSystemAccessToken("System");

@@ -8,7 +8,7 @@ import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.taskservice.core.exceptions.FindEntityException;
-import feign.FeignException;
+import by.itacademy.taskservice.core.exceptions.ForbiddenEntityException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,7 +26,7 @@ import java.util.List;
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
-public class UserExceptionHandler {
+public class TaskExceptionHandler {
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)
@@ -97,6 +97,16 @@ public class UserExceptionHandler {
         LOGGER.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ForbiddenEntityException.class})
+    public ResponseEntity<?> handleInvalidArgument(ForbiddenEntityException ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setLogref(ErrorType.ERROR);
+        response.setMessage(ex.getMessage());
+        LOGGER.error(ex.getMessage(), ex);
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
 

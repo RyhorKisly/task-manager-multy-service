@@ -13,9 +13,6 @@
         <module>shared-resource</module>
         <module>user-service</module>
         <module>audit-service</module>
-        <module>comments-service</module>
-        <module>notification-service</module>
-        <module>report-service</module>
         <module>task-service</module>
     </modules>
 

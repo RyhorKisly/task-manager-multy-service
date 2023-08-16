@@ -7,11 +7,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-//TODO переместить запись урла в файл с пропертями
-@FeignClient(value = "user-service", url = "http://localhost:8080/users/me")
+@FeignClient(value = "user-service", url = "${app.user-url}")
 public interface UserServiceClient {
 
-    @GetMapping
+    @GetMapping("/me")
     ResponseEntity<UserShortDTO> send(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken
             );

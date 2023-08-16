@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -73,6 +74,15 @@ public class JwtTokenHandler {
                 .parseClaimsJws(token)
                 .getBody();
         return objectMapper.convertValue(claims.get(property.getUser()), UserShortDTO.class);
+    }
+
+    public UUID getUserUuid(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(property.getSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        UserShortDTO userShortDTO = objectMapper.convertValue(claims.get(property.getUser()), UserShortDTO.class);
+        return userShortDTO.getUuid();
     }
 
     public Date getExpirationDate(String token) {

@@ -109,11 +109,10 @@ public class UserAuthenticationService implements IUserAuthenticationService {
 
         return jwtHandler.generateUserAccessToken(fillUserShortDTO(userEntity), userEntity.getMail());
     }
-
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public UserEntity getUser() {
-        return userService.get(holder.getUser().getUsername());
+        return userService.get(holder.getUser().getMail());
     }
 
     private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {

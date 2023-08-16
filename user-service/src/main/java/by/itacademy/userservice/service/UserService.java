@@ -14,12 +14,10 @@ import by.itacademy.userservice.service.api.IAuditInteractService;
 import by.itacademy.userservice.service.api.IUserService;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
-import by.itacademy.userservice.service.authentification.UserHolder;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,25 +32,22 @@ public class UserService implements IUserService {
     private static final String USER_EXIST_RESPONSE = "User with this login exists";
     private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
     private static final String WRONG_MAIL_RESPONSE = "Wrong mail";
-    private static final String USER_SAVED = "User: %s was created by: %s";
-    private static final String USER_UPDATED = "User: %s was updated by: %s";
+    private static final String USER_SAVED = "User: %s was created";
+    private static final String USER_UPDATED = "User: %s was updated";
     private static final String NOT_FOUND_SOME_USERS = "There are non-existent users in the query";
     private static final String NOT_VERIFIED_RESPONSE = "User: %s, is not activated. " +
             "To activate, follow the link sent to the email specified during registration. " +
             "If you didn't receive a link, please contact your administrator.";
     private final IUserDao userDao;
     private final PasswordEncoder encoder;
-    private final UserHolder holder;
     private final IAuditInteractService auditInteractService;
     public UserService(
             IUserDao userDao,
             PasswordEncoder encoder,
-            UserHolder holder,
             IAuditInteractService auditInteractService
     ) {
         this.userDao = userDao;
         this.encoder = encoder;
-        this.holder = holder;
         this.auditInteractService = auditInteractService;
     }
 
@@ -62,10 +57,8 @@ public class UserService implements IUserService {
         UserEntity userEntity = convertDTOToEntity(item);
         userEntity = checkAndSaveUserEntity(userEntity);
 
-        UserDetails userDetails = holder.getUser();
-        UserShortDTO userShortDTO = fillUserShortDTO(get(userDetails.getUsername()));
-        String text =  String.format(USER_SAVED, userEntity.getMail(), userShortDTO.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        String text =  String.format(USER_SAVED, userEntity.getMail());
+        auditInteractService.send(userEntity, text);
 
         return userEntity;
     }
@@ -130,10 +123,8 @@ public class UserService implements IUserService {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }
 
-        UserDetails userDetails = holder.getUser();
-        UserShortDTO userShortDTO = fillUserShortDTO(get(userDetails.getUsername()));
-        String text =  String.format(USER_UPDATED, userEntity.getMail(), userShortDTO.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        String text =  String.format(USER_UPDATED, userEntity.getMail());
+        auditInteractService.send(userEntity, text);
     }
 
     @Override
