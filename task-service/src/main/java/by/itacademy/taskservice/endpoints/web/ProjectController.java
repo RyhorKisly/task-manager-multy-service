@@ -4,21 +4,21 @@ import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
 import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
-import by.itacademy.taskservice.core.enums.ProjectStatus;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
 import by.itacademy.taskservice.service.api.IProjectService;
+import by.itacademy.taskservice.service.utils.PageConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Validated
@@ -27,33 +27,35 @@ import java.util.UUID;
 public class ProjectController {
     private final IProjectService projectService;
     private final ConversionService conversionService;
+    private final PageConverter pageConverter;
 
     public ProjectController(
             IProjectService projectService,
-            ConversionService conversionService
+            ConversionService conversionService,
+            PageConverter pageConverter
     ) {
         this.projectService = projectService;
         this.conversionService = conversionService;
+        this.pageConverter = pageConverter;
     }
 
     @PostMapping
     public ResponseEntity<?> save(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
             @RequestBody @Valid ProjectCreateDTO projectCreateDTO
             ) {
-        projectService.create(projectCreateDTO, bearerToken.split(" ")[1].trim());
+        projectService.create(projectCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<?> getPages(
+    public ResponseEntity<PageDTO<ProjectDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size,
             @RequestParam(required = false, defaultValue = "false") boolean archived
     ) {
         Page<ProjectEntity> pageOfProjects =  projectService.get(PageRequest.of(page, size), archived);
         return new ResponseEntity<>(
-                conversionService.convert(pageOfProjects, PageDTO.class),
+                pageConverter.convertToPageDTO(pageOfProjects, ProjectDTO.class),
                 HttpStatus.OK
         );
     }
@@ -68,7 +70,6 @@ public class ProjectController {
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
     public ResponseEntity<?> update(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody @Valid ProjectCreateDTO projectCreateDTO
@@ -76,7 +77,7 @@ public class ProjectController {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
-        projectService.update(projectCreateDTO, coordinatesDTO, bearerToken.split(" ")[1].trim());
+        projectService.update(projectCreateDTO, coordinatesDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

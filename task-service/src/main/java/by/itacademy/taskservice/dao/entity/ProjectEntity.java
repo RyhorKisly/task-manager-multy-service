@@ -27,8 +27,14 @@ public class ProjectEntity {
     private String name;
     private String description;
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "manager")
     private UserRefEntity manager;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name="projects_staff",
+            joinColumns= @JoinColumn(name="project_uuid"),
+            inverseJoinColumns= @JoinColumn(name="staff_uuid")
+    )
     private List<UserRefEntity> staff;
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;

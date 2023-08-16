@@ -6,13 +6,11 @@ import by.itacademy.taskservice.dao.entity.ProjectEntity;
 import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import org.springframework.core.convert.converter.Converter;
 
-import java.lang.annotation.Annotation;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-public class ProjectEntityToProjectDTOConverter implements Converter<ProjectEntity, ProjectDTO> {
+public class ProjectEntityToDTOConverter implements Converter<ProjectEntity, ProjectDTO> {
     @Override
     public ProjectDTO convert(ProjectEntity entity) {
         List<UserRefDTO> userRefDTOS = new ArrayList<>();
