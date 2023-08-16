@@ -3,7 +3,6 @@ package by.itacademy.userservice.endponts.utils;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.userservice.config.properites.JWTProperty;
 import io.jsonwebtoken.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

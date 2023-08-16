@@ -3,7 +3,6 @@ package by.itacademy.taskservice.endpoints.web;
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
 import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.taskservice.core.dto.FilterDTO;
-import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.dto.TaskCreateDTO;
 import by.itacademy.taskservice.core.dto.TaskDTO;
 import by.itacademy.taskservice.core.enums.TaskStatus;
