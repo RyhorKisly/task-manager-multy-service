@@ -1,7 +1,6 @@
 package by.itacademy.userservice.service;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
-import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
@@ -166,15 +165,6 @@ public class UserService implements IUserService {
         userEntity.setStatus(UserStatus.WAITING_ACTIVATION);
         userEntity.setPassword(encoder.encode(item.getPassword()));
         return userEntity;
-    }
-
-    private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
-        UserShortDTO userShortDTO = new UserShortDTO();
-        userShortDTO.setUuid(entityEntity.getUuid());
-        userShortDTO.setMail(entityEntity.getMail());
-        userShortDTO.setFio(entityEntity.getFio());
-        userShortDTO.setRole(entityEntity.getRole());
-        return userShortDTO;
     }
 
     private void setFieldsToUpdate(UserEntity userEntity, UserCreateDTO item) {
