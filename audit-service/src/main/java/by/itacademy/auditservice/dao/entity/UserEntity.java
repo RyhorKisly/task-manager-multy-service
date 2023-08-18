@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user", schema = "app")
+@Table(name = "user")
 public class UserEntity {
     @Id
     private UUID uuid;

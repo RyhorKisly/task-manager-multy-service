@@ -1,19 +1,17 @@
 package by.itacademy.taskservice.dao.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_ref_entity", schema="app")
+@Table(name = "user_ref", schema = "task")
 public class UserRefEntity {
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private Long id;
-
+    @Column(name = "uuid")
     private UUID uuid;
 
     public UserRefEntity() {

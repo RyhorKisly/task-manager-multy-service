@@ -1,14 +1,6 @@
-CREATE DATABASE task_service
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
+CREATE SCHEMA task;
 
-CREATE SCHEMA app
-    AUTHORIZATION postgres;
-
-CREATE TABLE app.tasks
+CREATE TABLE task.tasks
 (
     uuid uuid,
     dt_create timestamp(6) without time zone,
@@ -22,14 +14,14 @@ CREATE TABLE app.tasks
     CONSTRAINT tasks_title_unique UNIQUE (title)
 );
 
-CREATE TABLE IF NOT EXISTS app.user_ref_entity
+CREATE TABLE IF NOT EXISTS task.user_ref
 (
     id bigint NOT NULL,
     uuid uuid NOT NULL,
-    CONSTRAINT user_ref_entity_pkey PRIMARY KEY (id)
+    CONSTRAINT user_ref_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE app.projects
+CREATE TABLE task.projects
 (
     uuid uuid NOT NULL,
     dt_create timestamp without time zone NOT NULL,
@@ -40,16 +32,16 @@ CREATE TABLE app.projects
     status text,
     CONSTRAINT projects_pkey PRIMARY KEY (uuid),
     CONSTRAINT user_ref_projects_manager_fkey FOREIGN KEY (manager)
-        REFERENCES app.user_ref_entity (id),
+        REFERENCES task.user_ref (id),
     CONSTRAINT projects_name_unique UNIQUE (name)
 );
 
-CREATE TABLE IF NOT EXISTS app.projects_staff
+CREATE TABLE IF NOT EXISTS task.projects_staff
 (
     project_uuid uuid NOT NULL,
     staff_uuid bigint,
     CONSTRAINT projects_staff_project_uuid_fkey FOREIGN KEY (project_uuid)
-        REFERENCES app.projects (uuid),
+        REFERENCES task.projects (uuid),
     CONSTRAINT user_ref_staff_uuid_fkey FOREIGN KEY (staff_uuid)
-        REFERENCES app.user_ref_entity (id)
+        REFERENCES task.user_ref (id)
 );

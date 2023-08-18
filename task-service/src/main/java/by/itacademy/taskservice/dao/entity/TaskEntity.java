@@ -9,7 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 @Entity
-@Table(name = "tasks", schema = "app")
+@Table(name = "tasks")
 public class TaskEntity {
     @Id
     private UUID uuid;
@@ -23,11 +23,15 @@ public class TaskEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
+    @Column(name = "project")
     private UUID project;
+    @Column(name = "title")
     private String title;
+    @Column(name = "description")
     private String description;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
+    @Column(name = "implementer")
     private UUID implementer;
 
     public TaskEntity() {

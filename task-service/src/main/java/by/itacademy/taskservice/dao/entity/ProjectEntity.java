@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "projects", schema = "app")
+@Table(name = "projects")
 public class ProjectEntity {
     @Id
     private UUID uuid;
@@ -24,12 +24,14 @@ public class ProjectEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager")
     private UserRefEntity manager;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name="projects_staff",
             joinColumns= @JoinColumn(name="project_uuid"),
