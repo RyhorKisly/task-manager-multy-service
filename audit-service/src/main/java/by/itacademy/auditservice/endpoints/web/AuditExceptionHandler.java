@@ -24,6 +24,9 @@ import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
 public class AuditExceptionHandler {
+    private static final String INCORRECT_DATA = "The request contains incorrect data. Change request and try again or contact support!";
+    private static final String INCORRECT_CHARACTERS = "Incorrect characters. Change request and try it again!";
+    private static final String SERVER_ERROR = "Internal server Error. Please, contact support!";
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)
@@ -63,7 +66,7 @@ public class AuditExceptionHandler {
     public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
-        response.setMessage("The request contains incorrect data. Change request and try again or contact support!");
+        response.setMessage(INCORRECT_DATA);
         LOGGER.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -87,7 +90,7 @@ public class AuditExceptionHandler {
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
-        response.setMessage("Incorrect characters. Change request and try it again!");
+        response.setMessage(INCORRECT_CHARACTERS);
         LOGGER.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -100,7 +103,7 @@ public class AuditExceptionHandler {
     public ResponseEntity<?> handleInnerError(Exception ex) {
         ErrorResponse response = new ErrorResponse(
                 ErrorType.ERROR,
-                "Internal server Error. Please, contact support!"
+                SERVER_ERROR
         );
         LOGGER.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
