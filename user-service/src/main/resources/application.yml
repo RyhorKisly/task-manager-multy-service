@@ -1,18 +1,19 @@
 spring:
+  application:
+    name: user-service
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    properties:
+      hibernate.default_schema: users
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/user_service?ApplicationName=User_Service
-    username: postgres
-    password: postgres
-    hikari:
-      schema: app
+    url: jdbc:postgresql://user-db:5432/user-service
+    username: root
+    password: root
+
   jackson:
     property-naming-strategy: SNAKE_CASE
-
-  jpa:
-    open-in-view: true
-#    hibernate:
-#      ddl-auto: create
 
   config:
     import: confidential.yml
@@ -32,5 +33,44 @@ server:
   port: 8080
 
 app:
-  user-verification-path: http://localhost:8080/users/verification
-  audit-url: http://localhost:8081/audit
+  user-verification-path: http://localhost/api/v1/users/verification
+  audit-url: http://audit-service:8080/audit
+
+
+#spring:
+#  application:
+#    name: user-service
+#  jpa:
+#    database: POSTGRESQL
+#    show-sql: true
+#    properties:
+#      hibernate.default_schema: app
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/user_service
+#    username: postgres
+#    password: postgres
+#
+#  jackson:
+#    property-naming-strategy: SNAKE_CASE
+#
+#  config:
+#    import: confidential.yml
+#
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL:
+#          DEBUG
+#        orm:
+#          jdbc:
+#            bind:
+#              Trace
+#
+#server:
+#  port: 8080
+#
+#app:
+#  user-verification-path: http://localhost:8080/users/verification
+#  audit-url: http://localhost:8081/audit
