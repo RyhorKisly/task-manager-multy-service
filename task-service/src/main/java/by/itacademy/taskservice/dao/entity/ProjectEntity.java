@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "projects",
+        uniqueConstraints = @UniqueConstraint(name = "projects_name_unique", columnNames = {"name"}))
 public class ProjectEntity {
     @Id
     private UUID uuid;
@@ -20,22 +22,22 @@ public class ProjectEntity {
     private LocalDateTime dtCreate;
 
     @Version
-    @UpdateTimestamp(source = SourceType.DB)
+    @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "dt_update")
     private LocalDateTime dtUpdate;
-    @Column(name = "name")
     private String name;
-    @Column(name = "description")
     private String description;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "manager")
+    @ManyToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "manager", foreignKey = @ForeignKey(name = "project_users_foreign_key"))
     private UserRefEntity manager;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinTable(
             name="projects_staff",
             joinColumns= @JoinColumn(name="project_uuid"),
-            inverseJoinColumns= @JoinColumn(name="staff_uuid")
+            foreignKey = @ForeignKey(name = "projects_staff_project_uuid_fkey"),
+            inverseJoinColumns= @JoinColumn(name="staff_uuid"),
+            inverseForeignKey = @ForeignKey(name = "users_staff_uuid_fkey")
     )
     private List<UserRefEntity> staff;
     @Enumerated(EnumType.STRING)

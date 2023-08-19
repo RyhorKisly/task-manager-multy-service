@@ -2,6 +2,8 @@ package by.itacademy.userservice.core.dto;
 
 import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.userservice.core.enums.UserStatus;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.util.UUID;
 

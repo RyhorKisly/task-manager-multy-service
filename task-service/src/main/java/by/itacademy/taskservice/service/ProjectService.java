@@ -37,6 +37,7 @@ public class ProjectService implements IProjectService {
     private static final String ERROR_GET_RESPONSE = "Failed to get project(s). Try again or contact support!";
     private static final String ERROR_GET_PAGE_BY_USER = "This user does not participate any project!";
     private static final String PROJECT_NOT_EXIST_RESPONSE = "Project with this id does not exist!";
+    private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
     private static final String ERROR_UPDATE_RESPONSE = "Failed to update project. Wrong coordinates!";
     private final IProjectsDao projectsDao;
     private final IUserInteractService userInteractService;
@@ -55,25 +56,16 @@ public class ProjectService implements IProjectService {
     }
     @Transactional
     @Override
-    public ProjectEntity create(ProjectCreateDTO dto) {
+    public void create(ProjectCreateDTO dto) {
+        checkUsersUuids(dto);
+
         ProjectEntity entity = convertDTOToEntity(dto);
+        saveOfThrow(entity);
 
-        List<UserRefEntity> userRefEntities = new ArrayList<>(entity.getStaff());
-        userRefEntities.add(entity.getManager());
-        List<UUID> uuids = new ArrayList<>();
-        for (UserRefEntity userRefEntity : userRefEntities) {
-            uuids.add(userRefEntity.getUuid());
-        }
-
-        userInteractService.check(uuids);
-        entity = checkAndSaveEntity(entity);
-
-      UserShortDTO userShortDTO = holder.getUser();
-
+        UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(PROJECT_CREATED, dto.getName());
         auditInteractService.send(userShortDTO, entity.getUuid(), text, EssenceType.PROJECT);
 
-        return entity;
     }
     @Transactional(readOnly = true)
     @Override
@@ -127,6 +119,8 @@ public class ProjectService implements IProjectService {
     @Transactional
     @Override
     public ProjectEntity update(ProjectCreateDTO dto, CoordinatesDTO coordinates) {
+        checkUsersUuids(dto);
+
         ProjectEntity entity = projectsDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(PROJECT_NOT_EXIST_RESPONSE));
 
@@ -136,13 +130,9 @@ public class ProjectService implements IProjectService {
             throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE);
         }
 
-        setFieldsToUpdate(entity, dto);
+        updateFields(entity, dto);
 
-        try {
-            projectsDao.saveAndFlush(entity);
-        } catch (DataAccessException ex) {
-            throw new UndefinedDBEntityException(ex.getMessage(), ex);
-        }
+        saveOfThrow(entity);
 
         UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(PROJECT_UPDATED, dto.getName());
@@ -166,9 +156,9 @@ public class ProjectService implements IProjectService {
         return entity;
     }
 
-    private ProjectEntity checkAndSaveEntity(ProjectEntity entity) {
+    private void saveOfThrow(ProjectEntity entity) {
         try {
-            entity = projectsDao.saveAndFlush(entity);
+            projectsDao.saveAndFlush(entity);
         } catch (DataAccessException ex) {
             if (ex.getMessage().contains(NAME_UNIQUE_CONSTRAINT)) {
                 throw new DataIntegrityViolationException(PROJECT_EXIST_RESPONSE, ex);
@@ -178,19 +168,31 @@ public class ProjectService implements IProjectService {
         } catch (RuntimeException ex) {
             throw new RuntimeException (ex.getMessage(), ex);
         }
-        return entity;
     }
 
-    private void setFieldsToUpdate(ProjectEntity entity, ProjectCreateDTO dto) {
-        List<UserRefEntity> userRefEntities = new ArrayList<>();
+    private void checkUsersUuids(ProjectCreateDTO dto) {
+        List<UUID> uuids = new ArrayList<>();
+        uuids.add(dto.getManager().getUuid());
         for (UserRefDTO staff : dto.getStaff()) {
-            userRefEntities.add(new UserRefEntity(staff.getUuid()));
+            uuids.add(staff.getUuid());
+        }
+        userInteractService.check(uuids);
+    }
+
+
+    private void updateFields(ProjectEntity entity, ProjectCreateDTO dto) {
+        UserRefEntity manager = new UserRefEntity(dto.getManager().getUuid());
+
+        List<UUID> uuids = dto.getStaff().stream().map(UserRefDTO::getUuid).toList();
+        List<UserRefEntity> staffs = new ArrayList<>();
+        for (UUID uuid : uuids) {
+            staffs.add(new UserRefEntity(uuid));
         }
 
-        entity.setStaff(userRefEntities);
+        entity.setStaff(staffs);
         entity.setName(dto.getName());
         entity.setDescription(dto.getDescription());
-        entity.setManager(new UserRefEntity(dto.getManager().getUuid()));
+        entity.setManager(manager);
         entity.setStatus(dto.getStatus());
     }
 

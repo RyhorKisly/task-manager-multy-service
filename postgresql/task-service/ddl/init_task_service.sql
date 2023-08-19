@@ -14,11 +14,10 @@ CREATE TABLE task.tasks
     CONSTRAINT tasks_title_unique UNIQUE (title)
 );
 
-CREATE TABLE IF NOT EXISTS task.user_ref
+CREATE TABLE IF NOT EXISTS task.users
 (
-    id bigint NOT NULL,
     uuid uuid NOT NULL,
-    CONSTRAINT user_ref_pkey PRIMARY KEY (id)
+    CONSTRAINT user_ref_pkey PRIMARY KEY (uuid)
 );
 
 CREATE TABLE task.projects
@@ -28,20 +27,23 @@ CREATE TABLE task.projects
     dt_update timestamp without time zone NOT NULL,
     name text NOT NULL,
     description text NOT NULL,
-    manager bigint NOT NULL,
+    manager uuid NOT NULL,
     status text,
     CONSTRAINT projects_pkey PRIMARY KEY (uuid),
-    CONSTRAINT user_ref_projects_manager_fkey FOREIGN KEY (manager)
-        REFERENCES task.user_ref (id),
+    CONSTRAINT project_users_foreign_key FOREIGN KEY (manager)
+        REFERENCES task.users (uuid),
     CONSTRAINT projects_name_unique UNIQUE (name)
 );
+
+
 
 CREATE TABLE IF NOT EXISTS task.projects_staff
 (
     project_uuid uuid NOT NULL,
-    staff_uuid bigint,
+    staff_uuid uuid NOT NULL,
+    CONSTRAINT projects_staff_pkey PRIMARY KEY (project_uuid, staff_uuid),
     CONSTRAINT projects_staff_project_uuid_fkey FOREIGN KEY (project_uuid)
         REFERENCES task.projects (uuid),
-    CONSTRAINT user_ref_staff_uuid_fkey FOREIGN KEY (staff_uuid)
-        REFERENCES task.user_ref (id)
+    CONSTRAINT users_staff_uuid_fkey FOREIGN KEY (staff_uuid)
+        REFERENCES task.users (uuid)
 );

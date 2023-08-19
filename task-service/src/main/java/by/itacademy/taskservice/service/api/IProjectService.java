@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 @Validated
 public interface IProjectService {
-    ProjectEntity create(@Valid ProjectCreateDTO dto);
+    void create(@Valid ProjectCreateDTO dto);
     Page<ProjectEntity> get(PageRequest pageRequest, boolean archived);
     ProjectEntity get(UUID projectUuid);
     List<ProjectEntity> getByUser(UUID userUuid);
