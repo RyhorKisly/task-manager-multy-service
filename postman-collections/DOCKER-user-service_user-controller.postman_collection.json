@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "8c9f70f8-cbc2-4852-bfc7-c21cd7a1b5bf",
+		"name": "DOCKER-user-service_user-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26695165",
+		"_collection_link": "https://blue-astronaut-753448.postman.co/workspace/task-manager~b15546d2-d871-46ab-91f2-1a299df4ffab/collection/26695165-8c9f70f8-cbc2-4852-bfc7-c21cd7a1b5bf?action=share&source=collection_link&creator=26695165"
+	},
+	"item": [
+		{
+			"name": "save",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mail\": \"test8@test.test\",\n    \"fio\": \"test8\",\n    \"role\": \"USER\",\n    \"status\": \"ACTIVATED\",\n    \"password\": \"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/users",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCard",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "        {\n            \"uuid\": \"4ef85ddc-71dd-4460-8d8a-8cc3da80279e\",\n            \"dtCreate\": 1690269618791,\n            \"dtUpdate\": 1690269618791,\n            \"mail\": \"digrikis@mail.ru\",\n            \"fio\": \"Кислый Григорий Дмитриевич\",\n            \"status\": \"ACTIVATED\",\n            \"role\": \"ADMIN\"\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/users/28d0390b-8004-47c7-9946-722cc55c1bfb",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"28d0390b-8004-47c7-9946-722cc55c1bfb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPage",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/users",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mail\": \"test1@test.test\",\n    \"fio\": \"test1 UPDATED\",\n    \"role\": \"USER\",\n    \"status\": \"ACTIVATED\",\n    \"password\": \"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/users/d3296d5b-5693-4826-a687-490ced0d6290/dt_update/1692310928649",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"d3296d5b-5693-4826-a687-490ced0d6290",
+						"dt_update",
+						"1692310928649"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "validate-just-to-check",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MTI4MDM5MiwiZXhwIjoxNjkxODg1MTkyfQ.IJ91QyZfg02j33vLY-Aupy2bkjDBB5HD4j-l-DY5ad5XCulWxRUfqFoNl9_6Du95bx1hPW0PrvWSXiwh9xGxIQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n        \"28d0390b-8004-47c7-9946-722cc55c1bfb\", \n        \"ecadeb6e-4f90-423a-b339-c35302a517d4\",\n        \"726a3058-7c47-40fc-b0a1-59f5f2e48cf6\"\n]\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/users/validation",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"validation"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

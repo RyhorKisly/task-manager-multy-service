@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "054e82f8-ee31-4ace-878f-6941dda0d0d7",
+		"name": "DOCKER-task-service_TaskController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26695165",
+		"_collection_link": "https://blue-astronaut-753448.postman.co/workspace/task-manager~b15546d2-d871-46ab-91f2-1a299df4ffab/collection/26695165-054e82f8-ee31-4ace-878f-6941dda0d0d7?action=share&source=collection_link&creator=26695165"
+	},
+	"item": [
+		{
+			"name": "save",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"project\": {\n    \"uuid\": \"55d56d3e-a318-468f-8059-e1bf97f725c5\"\n  },\n  \"title\": \"task from project1 - for manager new-2\",\n  \"description\": \"for test1\",\n  \"status\": \"IN_WORK\",\n  \"implementer\": {\n    \"uuid\": \"e8d02e5e-e40f-42a9-a34b-b6f4b520215e\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/task",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getPage",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiJiYTdkNGM0Yi1kOTQyLTRlOWItYjIxMi1lYTFlOTk2NDQxM2QiLCJtYWlsIjoidGVzdDhAdGVzdC50ZXN0IiwiZmlvIjoidGVzdDgiLCJyb2xlIjoiVVNFUiJ9LCJzdWIiOiJ0ZXN0OEB0ZXN0LnRlc3QiLCJpc3MiOiJJVEFjYWRlbXkiLCJpYXQiOjE2OTI0Nzg0NzYsImV4cCI6MTY5MzA4MzI3Nn0.FoeZE4z994YX_GKtH2vJnZ4j9vpv_0XXrARkQZEErFtb49VorgxR3CA-2Cpyp1YkMyvcYYARl9a_TPhXxlPY8g",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/task",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCard",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/task/6898a15a-2c8e-43ca-8003-4c6351cdd7db",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"task",
+						"6898a15a-2c8e-43ca-8003-4c6351cdd7db"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMwNzcwMywiZXhwIjoxNjkyOTEyNTAzfQ.VyYprYQ0Zj43tz3LR7XyscO1rmKCHp7Yz5vMIUlcOaQeAwtPUwwayy7TWa8TvU2zYBDUrQl7NZtdM7tfkzZAxw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"project\": {\n    \"uuid\": \"04defb2b-74c8-4df7-b05b-1cb57b2aeba8\"\n  },\n  \"title\": \"task from project2\",\n  \"description\": \"for test5\",\n  \"status\": \"CLOSE\",\n  \"implementer\": {\n    \"uuid\": \"5ca0a07f-8f2b-4dff-b871-5494d83cb540\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost/api/v1/task/6898a15a-2c8e-43ca-8003-4c6351cdd7db/dt_update/1692478085553",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"task",
+						"6898a15a-2c8e-43ca-8003-4c6351cdd7db",
+						"dt_update",
+						"1692478085553"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
