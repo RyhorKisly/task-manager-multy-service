@@ -117,7 +117,7 @@ ___
    - TaskManager/user-service/src/main/resources/confidential.yml
    - Для корректной работы почты, пароль необходимо ввести специальный для приложений
    - Реализована отправка почти при помощи mail.ru или google.com
-- Выполните команду 'мmn install' в корневой директории соответствующего сервиса для shared-resource;
+- Выполните команду 'mvn install' в корневой директории соответствующего сервиса для shared-resource;
 - После, выполните команду 'mvn package' в корневых директориях соответствующих сервисов  для user-service, task-service, audit-service;
 - Выполните команду 'docker-compose up' для сборки проекта в docker
 - Для просмотра урлов доступен open api file по адресу http://loccalhost:81
