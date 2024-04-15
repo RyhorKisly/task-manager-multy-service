@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: audit-service
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    properties:
+      hibernate.default_schema: audits
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://audit-db:5432/audit-service
+    username: root
+    password: root
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  config:
+    import: confidential.yml
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL:
+          DEBUG
+        orm:
+          jdbc:
+            bind:
+              Trace
+
+server:
+  port: 8080
+
+app:
+  user-url: http://user-service:8080/users

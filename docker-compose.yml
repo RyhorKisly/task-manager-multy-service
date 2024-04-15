@@ -1,0 +1,96 @@
+version: '3.5'
+services:
+
+  user-db:
+    build: postgresql
+    image: taskmanager_postgresql:1.0.20
+    restart: always
+    environment:
+      POSTGRES_DB: user-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./postgresql/user-service/ddl/init_user_service.sql:/docker-entrypoint-initdb.d/init_user_service.sql
+      - ./postgres-data/user-service:/var/lib/postgresql/data
+    networks:
+      - taskmanager_ntwrks
+
+  audit-db:
+    build: postgresql
+    image: taskmanager_postgresql:1.0.20
+    restart: always
+    environment:
+      POSTGRES_DB: audit-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./postgresql/audit-service/ddl/init_audit_service.sql:/docker-entrypoint-initdb.d/init_audit_service.sql
+      - ./postgres-data/audit-service:/var/lib/postgresql/data
+    networks:
+      - taskmanager_ntwrks
+
+  task-db:
+    build: postgresql
+    image: taskmanager_postgresql:1.0.20
+    restart: always
+    environment:
+      POSTGRES_DB: task-service
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./postgresql/task-service/ddl/init_task_service.sql:/docker-entrypoint-initdb.d/init_task_service.sql
+      - ./postgres-data/task-service:/var/lib/postgresql/data
+    networks:
+      - taskmanager_ntwrks
+      
+  pgadmin:
+    build: pgadmin
+    image: taskmanager_pgadmin:1.0.20
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "82:80"
+    networks:
+      - taskmanager_ntwrks
+
+  swagger-ui:
+    build: swagger-ui
+    image: taskmanager_swagger-ui:1.0.11
+    ports:
+      - "81:8080"
+    networks:
+      - taskmanager_ntwrks
+
+  user-service:
+    build: user-service
+    image: taskmanager_user-service:1.0.12
+    restart: always
+    networks:
+      - taskmanager_ntwrks
+
+  task-service:
+    build: task-service
+    image: taskmanager_task-service:1.0.17
+    restart: always
+    networks:
+      - taskmanager_ntwrks
+
+  audit-service:
+     build: audit-service
+     image: taskmanager_audit-service:1.0.12
+     restart: always
+     networks:
+       - taskmanager_ntwrks
+
+  proxy:
+    build: proxy
+    image: taskmanager_proxy:1.0.11
+    ports:
+      - "80:80"
+    networks:
+      - taskmanager_ntwrks
+networks:
+  taskmanager_ntwrks:
+    name: taskmanager_ntwrks

@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "8b2f068e-d73b-4ddc-acd4-dbe726e14636",
+		"name": "DOCKER-audit-service_AuditController",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26695165",
+		"_collection_link": "https://blue-astronaut-753448.postman.co/workspace/task-manager~b15546d2-d871-46ab-91f2-1a299df4ffab/collection/26695165-8b2f068e-d73b-4ddc-acd4-dbe726e14636?action=share&source=collection_link&creator=26695165"
+	},
+	"item": [
+		{
+			"name": "getPage",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMxMTg1MCwiZXhwIjoxNjkyOTE2NjUwfQ.H9lHK7fa159atazbov01sZzhnrD7NsS-y0d_sXaTX_O5p8wsrZbHkN5VppHvodkCzfppHedFJcwN9hleKxHMEw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/audit",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"audit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCard Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiJ9.eyJVc2VyIjp7InV1aWQiOiIyOGQwMzkwYi04MDA0LTQ3YzctOTk0Ni03MjJjYzU1YzFiZmIiLCJtYWlsIjoiYWRtaW5AYWRtaW4uYWRtaW4iLCJmaW8iOiJBZG1pbiIsInJvbGUiOiJBRE1JTiJ9LCJzdWIiOiJhZG1pbkBhZG1pbi5hZG1pbiIsImlzcyI6IklUQWNhZGVteSIsImlhdCI6MTY5MjMxMTg1MCwiZXhwIjoxNjkyOTE2NjUwfQ.H9lHK7fa159atazbov01sZzhnrD7NsS-y0d_sXaTX_O5p8wsrZbHkN5VppHvodkCzfppHedFJcwN9hleKxHMEw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost/api/v1/audit/45ab8e38-237e-41eb-8547-a9e0dc8b4621",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"audit",
+						"45ab8e38-237e-41eb-8547-a9e0dc8b4621"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
