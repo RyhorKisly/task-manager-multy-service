@@ -1,8 +1,8 @@
 FROM eclipse-temurin:19-jre-focal
 MAINTAINER ITAcademy
 
-ADD ./target/task-service.jar /app/
+ADD ./build/libs/task-service-0.1.0.jar /app/
 
-CMD ["java", "-Xmx200m", "-jar", "/app/task-service.jar"]
+CMD ["java", "-Xmx200m", "-jar", "/app/task-service-0.1.0.jar"]
 
 EXPOSE 8080 8089
