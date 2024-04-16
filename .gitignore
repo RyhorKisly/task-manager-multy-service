@@ -1,6 +1,8 @@
 HELP.md
 ToDo.java
 target/
+.gradle
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
