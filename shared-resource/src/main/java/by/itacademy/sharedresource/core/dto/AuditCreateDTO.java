@@ -5,7 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @JsonRootName(value = "audit")
 public class AuditCreateDTO {
     @JsonProperty("user")
@@ -16,47 +26,4 @@ public class AuditCreateDTO {
     private EssenceType type;
     @NotBlank(message = "Id is mandatory")
     private String id;
-
-    public AuditCreateDTO() {
-    }
-    public AuditCreateDTO(UserShortDTO user, String text, EssenceType type, String id) {
-        this.user = user;
-        this.text = text;
-        this.type = type;
-        this.id = id;
-    }
-
-    public UserShortDTO getUserShortDTO() {
-        return user;
-    }
-
-    public void setUserShortDTO(UserShortDTO user) {
-        this.user = user;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public EssenceType getType() {
-        return type;
-    }
-
-    public void setType(EssenceType type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-
 }

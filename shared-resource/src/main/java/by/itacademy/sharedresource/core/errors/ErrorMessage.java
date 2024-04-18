@@ -1,30 +1,17 @@
 package by.itacademy.sharedresource.core.errors;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ErrorMessage {
     private String field;
     private String message;
-
-    public ErrorMessage() {
-    }
-
-    public ErrorMessage(String field, String message) {
-        this.field = field;
-        this.message = message;
-    }
-
-    public String getField() {
-        return field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }
