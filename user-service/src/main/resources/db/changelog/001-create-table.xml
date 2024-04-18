@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="001" author="GrigoriyKislyi">
+
+        <createTable tableName="users"
+                     schemaName="app">
+            <column name="uuid" type="uuid">
+                <constraints primaryKey="true"
+                             primaryKeyName="users_pkey"
+                             nullable="false"/>
+            </column>
+            <column name="dt_create" type="timestamp without time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dt_update" type="timestamp without time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mail" type="text">
+                <constraints unique="true"
+                             uniqueConstraintName="users_mail_unique"
+                             nullable="false"/>
+            </column>
+            <column name="fio" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="verification"
+                     schemaName="app">
+            <column name="uuid" type="uuid">
+                <constraints primaryKey="true"
+                             primaryKeyName="verification_pkey"
+                             nullable="false"/>
+            </column>
+            <column name="mail" type="text">
+                <constraints unique="true"
+                             uniqueConstraintName="verification_mail_unique"
+                             nullable="false"/>
+            </column>
+            <column name="dt_create" type="timestamp without time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        </changeSet>
+</databaseChangeLog>

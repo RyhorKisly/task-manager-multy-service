@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="002" author="GrigoriyKislyi">
+        <insert  schemaName="app"
+                 tableName="users">
+            <column  name="uuid"  value="28d0390b-8004-47c7-9946-722cc55c1bfb"/>
+            <column  name="dt_create"  valueDate="current_timestamp"/>
+            <column  name="dt_update"  valueDate="current_timestamp"/>
+            <column  name="mail"  value="admin@admin.admin"/>
+            <column  name="fio"  value="Admin"/>
+            <column  name="role"  value="ADMIN"/>
+            <column  name="status"  value="ACTIVATED"/>
+            <column  name="password"  value="$2a$10$7QBJYpUSNMQqMX9TW8MfsewaciNqqkw6Ng5T6DqbB9o9j2.MiW6m6"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

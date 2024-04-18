@@ -21,6 +21,8 @@ ext {
 	jjwtVersion = "0.9.1"
 	jaxbApiVersion = "2.3.1"
 	sharedResource = "1.0.0"
+	preliquibaseVersion = "1.5.0"
+	sharedResourceVersion = "1.0.0"
 }
 
 dependencies {
@@ -32,6 +34,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.liquibase:liquibase-core'
+	implementation "net.lbruun.springboot:preliquibase-spring-boot-starter:${preliquibaseVersion}"
+
+	implementation "by.itacademy:shared-resource:${sharedResourceVersion}"
 
 	implementation "io.jsonwebtoken:jjwt:${jjwtVersion}"
 	implementation "javax.xml.bind:jaxb-api:${jaxbApiVersion}"

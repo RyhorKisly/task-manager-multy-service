@@ -1,11 +1,10 @@
 # Оправка через mail.ru
-
 spring:
   mail:
     host: smtp.mail.ru
     port: 465
-    username: ***@mail.ru
-    password: ***
+    username: lalala@mail.ru
+    password: lalala
     properties:
       "mail.smtp.ssl.enable": true
       mail:
@@ -18,7 +17,6 @@ spring:
             enable: true
 
 # Отправка через google.com
-
 #spring:
 #  mail:
 #    host: smtp.gmail.com
@@ -36,10 +34,10 @@ spring:
 #            enable: true
 
 jwt:
-  secret: NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw
-  issuer: ITAcademy
-  user: User
-  system: System
+  secret: ${JWT_SECRET:NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw}
+  issuer: ${JWT_ISSUER:UserService}
+  user: ${JWT_USER:User}
+  system: ${JWT_SYSTEM:System}
 
 
 

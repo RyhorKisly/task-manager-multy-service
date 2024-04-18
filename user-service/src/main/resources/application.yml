@@ -1,16 +1,26 @@
 spring:
   application:
     name: user-service
+
   jpa:
     database: POSTGRESQL
+    open-in-view: true
     show-sql: true
     properties:
-      hibernate.default_schema: users
+      hibernate:
+        default_schema: app
+        format_sql: false
+
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://user-db:5432/user-service
-    username: root
-    password: root
+    url: jdbc:postgresql://${USER_DB_HOST:localhost}:${DB_POST:5432}/${USER_POSTGRES_DB:user-service}
+    username: ${USER_POSTGRES_USER:root}
+    password: ${USER_POSTGRES_PASSWORD:root}
+
+  liquibase:
+    default-schema: ${DEFAULT-SCHEMA:app}
+    liquibase-schema: ${LIQUIBASE_SCHEMA:liquibase}
+    change-log: db/changelog/changelog.xml
 
   jackson:
     property-naming-strategy: SNAKE_CASE
@@ -18,20 +28,27 @@ spring:
   config:
     import: confidential.yml
 
+
 logging:
-  level:
-    org:
-      hibernate:
-        SQL:
-          DEBUG
-        orm:
-          jdbc:
-            bind:
-              Trace
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rolling-policy:
+      max-file-size: 1MB
+      file-name-pattern: logs/${spring.application.name}.%d{yyyy.MM.dd}.%i.log
+      max-history: 7
+#  level:
+#    web: DEBUG
+#    org:
+#      hibernate:
+#        sql: DEBUG
+#        orm.jdbc.bind: TRACE
 
 server:
-  port: 8080
+  port: ${SERVICE_PORT:8080}
 
 app:
-  user-verification-path: http://localhost/api/v1/users/verification
-  audit-url: http://audit-service:8080/audit
+  user-verification-path: ${USER_VERIFICATION_PATH:http://localhost:8080/users/verification}
+  audit-url: ${AUDIT_SERVICE_URL:http://localhost:8081/audit}
