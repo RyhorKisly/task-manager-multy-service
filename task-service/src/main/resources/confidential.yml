@@ -1,9 +1,8 @@
 jwt:
-  secret: NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw
-  issuer: ITAcademy
-  user: User
-  system: System
-
+  secret: ${JWT_SECRET:NDQ1ZjAzNjQtMzViZi00MDRjLTljZjQtNjNjYWIyZTU5ZDYw}
+  issuer: ${JWT_ISSUER:TaskService}
+  user: ${JWT_USER:User}
+  system: ${JWT_SYSTEM:System}
 
 
 
