@@ -1,8 +1,8 @@
 package by.itacademy.userservice.service.api;
 
-import by.itacademy.userservice.dao.entity.UserEntity;
-import by.itacademy.userservice.dao.entity.VerificationEntity;
+import by.itacademy.userservice.core.dto.UserDTO;
+import by.itacademy.userservice.core.dto.VerificationDTO;
 
 public interface IEmailService {
-    void sendEmail(UserEntity item, VerificationEntity token);
+    void sendEmail(UserDTO item, VerificationDTO token);
 }

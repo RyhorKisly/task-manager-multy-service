@@ -3,15 +3,15 @@ package by.itacademy.userservice.endponts.filter;
 import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.userservice.config.properites.JWTProperty;
 import by.itacademy.userservice.core.dto.UserDTO;
-import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
 import by.itacademy.userservice.service.api.IUserService;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.core.convert.ConversionService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,29 +28,17 @@ import java.util.List;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenHandler jwtHandler;
     private final IUserService userService;
     private final JWTProperty property;
-    private final ConversionService conversionService;
-
-    public JwtFilter(
-            JwtTokenHandler jwtHandler,
-            IUserService userService,
-            JWTProperty property,
-            ConversionService conversionService
-    ) {
-        this.jwtHandler = jwtHandler;
-        this.userService = userService;
-        this.property = property;
-        this.conversionService = conversionService;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain chain)
+                                    @Nonnull HttpServletResponse response,
+                                    @NonNull FilterChain chain)
             throws ServletException, IOException {
 
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -59,14 +47,12 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Get jwt token and validate
         final String token = header.split(" ")[1].trim();
         if (!jwtHandler.validate(token)) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Get user identity and set it on the spring security context
         String userName = jwtHandler.getUsername(token);
         UsernamePasswordAuthenticationToken authentication;
 
@@ -81,14 +67,12 @@ public class JwtFilter extends OncePerRequestFilter {
                     userDetails.getAuthorities()
             );
         } else {
-            UserEntity userEntity = userService.get(userName);
-            UserDTO userDTO = conversionService.convert(userEntity, UserDTO.class);
+            UserDTO userDTO = userService.get(userName);
             authentication = new UsernamePasswordAuthenticationToken(
                     userDTO, null,
                     userDTO.getRole() == null ? List.of() : List.of(new SimpleGrantedAuthority("ROLE_" + userDTO.getRole().name()))
             );
         }
-
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

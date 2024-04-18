@@ -8,7 +8,6 @@ import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
-import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -27,9 +26,6 @@ import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
 public class UserExceptionHandler {
-    private static final String INCORRECT_DATA = "The request contains incorrect data. Change request and try again or contact support!";
-    private static final String INCORRECT_CHARACTERS = "Incorrect characters. Change request and try it again!";
-    private static final String SERVER_ERROR = "Internal server Error. Please, contact support!";
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)
@@ -68,7 +64,7 @@ public class UserExceptionHandler {
     public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
-        response.setMessage(INCORRECT_DATA);
+        response.setMessage("incorrect.data");
         LOGGER.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -96,7 +92,7 @@ public class UserExceptionHandler {
     public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
-        response.setMessage(INCORRECT_CHARACTERS);
+        response.setMessage("incorrect.characters");
         LOGGER.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -109,7 +105,7 @@ public class UserExceptionHandler {
     public ResponseEntity<?> handleInnerError(Exception ex) {
         ErrorResponse response = new ErrorResponse(
                 ErrorType.ERROR,
-                SERVER_ERROR
+                "server.error"
         );
         LOGGER.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

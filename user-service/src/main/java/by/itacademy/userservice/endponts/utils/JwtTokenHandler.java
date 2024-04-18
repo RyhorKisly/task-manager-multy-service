@@ -3,6 +3,7 @@ package by.itacademy.userservice.endponts.utils;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.userservice.config.properites.JWTProperty;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -10,13 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenHandler {
 
     private final JWTProperty property;
-
-    public JwtTokenHandler(JWTProperty property) {
-        this.property = property;
-    }
 
     public String generateUserAccessToken(UserShortDTO dto) {
         return generateUserAccessToken(dto, dto.getMail());

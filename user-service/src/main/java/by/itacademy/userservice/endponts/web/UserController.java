@@ -1,12 +1,11 @@
 package by.itacademy.userservice.endponts.web;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
-import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.userservice.core.dto.*;
-import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.service.api.IUserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,20 +19,14 @@ import java.util.List;
 import java.util.UUID;
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
     private final IUserService userService;
     private final ConversionService conversionService;
-    public UserController(
-            IUserService userService,
-            ConversionService conversionService
-    ) {
-        this.userService = userService;
-        this.conversionService = conversionService;
-    }
 
     @PostMapping
-    public ResponseEntity<?> save(
+    public ResponseEntity<Void> save(
             @RequestBody @Valid UserCreateDTO userCreateDTO
     ) {
         userService.createByUser(userCreateDTO);
@@ -41,15 +34,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getPages(
+    public ResponseEntity<Page<UserDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
     ) {
-        Page<UserEntity> pageOfUsers =  userService.get(PageRequest.of(page, size));
-        return new ResponseEntity<>(
-                conversionService.convert(pageOfUsers, PageDTO.class),
-                HttpStatus.OK
-        );
+        Page<UserDTO> pageOfUsers =  userService.get(PageRequest.of(page, size));
+        return new ResponseEntity<>(pageOfUsers, HttpStatus.OK);
     }
  
       @GetMapping("/{uuid}")
@@ -61,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<Void> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody @Valid UserCreateDTO userCreateDTO
@@ -74,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("/validation")
-    public ResponseEntity<?> validate(
+    public ResponseEntity<Void> validate(
             @RequestBody List<UUID> uuids
             ) {
         userService.validate(uuids);

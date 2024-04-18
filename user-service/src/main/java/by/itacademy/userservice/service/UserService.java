@@ -1,18 +1,22 @@
 package by.itacademy.userservice.service;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
-import by.itacademy.sharedresource.core.enums.UserRole;
+import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
+import by.itacademy.userservice.core.dto.UserDTO;
 import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.dto.UserCreateDTO;
 import by.itacademy.userservice.core.enums.UserStatus;
+import by.itacademy.userservice.core.mappers.UserMapper;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.repositories.IUserDao;
 import by.itacademy.userservice.service.api.IAuditInteractService;
 import by.itacademy.userservice.service.api.IUserService;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
+import by.itacademy.userservice.service.authentification.UserHolder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -23,58 +27,55 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
+
+import static by.itacademy.userservice.core.util.Messages.ERROR_GET_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.ERROR_UPDATE_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.NAME_MAIL_CONSTRAINT;
+import static by.itacademy.userservice.core.util.Messages.NOT_ACTIVATED_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.USER_EXIST_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.USER_NOT_EXIST_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.USER_SAVED;
+import static by.itacademy.userservice.core.util.Messages.USER_UPDATED;
+import static by.itacademy.userservice.core.util.Messages.WRONG_MAIL_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.NOT_FOUND_SOME_USERS;
+
 @Service
+@RequiredArgsConstructor
 public class UserService implements IUserService {
-    private static final String ERROR_UPDATE_RESPONSE = "Failed to update user. Wrong coordinates!";
-    private static final String ERROR_GET_RESPONSE = "Failed to get user(s). Try again or contact support!";
-    private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
-    private static final String USER_EXIST_RESPONSE = "User with this login exists";
-    private static final String NAME_MAIL_CONSTRAINT = "users_mail_unique";
-    private static final String WRONG_MAIL_RESPONSE = "Wrong mail";
-    private static final String USER_SAVED = "User: %s was created";
-    private static final String USER_UPDATED = "User: %s was updated";
-    private static final String NOT_FOUND_SOME_USERS = "There are non-existent users in the query";
-    private static final String NOT_VERIFIED_RESPONSE = "User: %s, is not activated. " +
-            "To activate, follow the link sent to the email specified during registration. " +
-            "If you didn't receive a link, please contact your administrator.";
     private final IUserDao userDao;
     private final PasswordEncoder encoder;
     private final IAuditInteractService auditInteractService;
-    public UserService(
-            IUserDao userDao,
-            PasswordEncoder encoder,
-            IAuditInteractService auditInteractService
-    ) {
-        this.userDao = userDao;
-        this.encoder = encoder;
-        this.auditInteractService = auditInteractService;
-    }
+    private final UserMapper userMapper;
+    private final UserHolder holder;
 
     @Override
     @Transactional
-    public UserEntity createByUser(UserCreateDTO item) {
-        UserEntity userEntity = convertDTOToEntity(item);
+    public UserDTO createByUser(UserCreateDTO item) {
+        UserEntity userEntity = userMapper.userCreateDtoToUserEntity(item, encoder);
         userEntity = checkAndSaveUserEntity(userEntity);
 
         String text =  String.format(USER_SAVED, userEntity.getMail());
-        auditInteractService.send(userEntity, text);
+        UserShortDTO userShortDTO = userMapper.userDtoToUserShortDto(holder.getUser());
+        auditInteractService.send(userEntity.getUuid(), userShortDTO, text);
 
-        return userEntity;
+        return userMapper.userEntityToUserDto(userEntity);
     }
 
     @Override
     @Transactional
-    public UserEntity createWithRegistration(UserRegistrationDTO item) {
-        UserEntity userEntity = ConvertDTOToEntity(item);
+    public UserDTO createWithRegistration(UserRegistrationDTO item) {
+        UserEntity userEntity = userMapper.userRegistrationDtoToUserEntity(item, encoder);
+        userEntity = checkAndSaveUserEntity(userEntity);
 
-        return checkAndSaveUserEntity(userEntity);
+        return userMapper.userEntityToUserDto(userEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UserEntity> get(PageRequest pageRequest) {
+    public Page<UserDTO> get(PageRequest pageRequest) {
         try {
-            return userDao.findAll(pageRequest);
+            Page<UserEntity> userEntities = userDao.findAll(pageRequest);
+            return userEntities.map(userMapper::userEntityToUserDto);
         } catch (DataAccessException ex) {
             throw new FindEntityException(ERROR_GET_RESPONSE, ex);
         }
@@ -82,23 +83,25 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity get(UUID uuid) {
-            return userDao.findById(uuid)
-                    .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
+    public UserDTO get(UUID uuid) {
+        UserEntity userEntity = userDao.findById(uuid)
+                .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
+            return userMapper.userEntityToUserDto(userEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity get(String mail) {
-        return userDao.findByMail(mail)
+    public UserDTO get(String mail) {
+        UserEntity userEntity = userDao.findByMail(mail)
                 .orElseThrow(() -> new FindEntityException(WRONG_MAIL_RESPONSE));
+        return userMapper.userEntityToUserDto(userEntity);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserEntity get(String mail, UserStatus status) {
         return userDao.findByMailAndStatus(mail, status)
-                .orElseThrow(() -> new NotActivatedException(String.format(NOT_VERIFIED_RESPONSE, mail)));
+                .orElseThrow(() -> new NotActivatedException(String.format(NOT_ACTIVATED_RESPONSE, mail)));
     }
 
     @Override
@@ -114,7 +117,7 @@ public class UserService implements IUserService {
             throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE);
         }
 
-        setFieldsToUpdate(userEntity, item);
+        updateEntityFields(userEntity, item);
 
         try {
             userDao.saveAndFlush(userEntity);
@@ -123,15 +126,19 @@ public class UserService implements IUserService {
         }
 
         String text =  String.format(USER_UPDATED, userEntity.getMail());
-        auditInteractService.send(userEntity, text);
+        UserShortDTO userShortDTO = userMapper.userDtoToUserShortDto(holder.getUser());
+        auditInteractService.send(userEntity.getUuid(), userShortDTO, text);
     }
 
     @Override
     @Transactional
-    public void activate(UserEntity userEntity) {
+    public UserDTO activate(UserDTO userDTO) {
+        UserEntity userEntity = userDao.findByMail(userDTO.getMail())
+                .orElseThrow(() -> new FindEntityException(WRONG_MAIL_RESPONSE));
         userEntity.setStatus(UserStatus.ACTIVATED);
         try {
-            userDao.save(userEntity);
+            userEntity = userDao.save(userEntity);
+            return userMapper.userEntityToUserDto(userEntity);
         } catch (DataAccessException ex) {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }
@@ -139,35 +146,13 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserEntity> validate(List<UUID> uuids) {
+    public List<UserDTO> validate(List<UUID> uuids) {
         List<UserEntity> entities = userDao.findAllById(uuids);
         validate(entities, uuids);
-        return entities;
+        return userMapper.UserEntitiesToUserDTOs(entities);
     }
 
-    private UserEntity convertDTOToEntity(UserCreateDTO item) {
-        UserEntity entity = new UserEntity();
-        entity.setUuid(UUID.randomUUID());
-        entity.setMail(item.getMail());
-        entity.setFio(item.getFio());
-        entity.setRole(item.getRole());
-        entity.setStatus(item.getStatus());
-        entity.setPassword(encoder.encode(item.getPassword()));
-        return entity;
-    }
-
-    private UserEntity ConvertDTOToEntity(UserRegistrationDTO item) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUuid(UUID.randomUUID());
-        userEntity.setMail(item.getMail());
-        userEntity.setFio(item.getFio());
-        userEntity.setRole(UserRole.USER);
-        userEntity.setStatus(UserStatus.WAITING_ACTIVATION);
-        userEntity.setPassword(encoder.encode(item.getPassword()));
-        return userEntity;
-    }
-
-    private void setFieldsToUpdate(UserEntity userEntity, UserCreateDTO item) {
+    private void updateEntityFields(UserEntity userEntity, UserCreateDTO item) {
         userEntity.setMail(item.getMail());
         userEntity.setFio(item.getFio());
         userEntity.setRole(item.getRole());
@@ -196,7 +181,7 @@ public class UserService implements IUserService {
         }
         for (UserEntity entity : entities) {
             if(!entity.getStatus().equals(UserStatus.ACTIVATED)) {
-                throw new NotActivatedException(String.format(NOT_VERIFIED_RESPONSE, entity.getUuid()));
+                throw new NotActivatedException(String.format(NOT_ACTIVATED_RESPONSE, entity.getUuid()));
             }
         }
     }

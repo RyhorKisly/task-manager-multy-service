@@ -3,13 +3,16 @@ package by.itacademy.userservice.service.authentification;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.VerificationException;
+import by.itacademy.userservice.core.dto.UserDTO;
 import by.itacademy.userservice.core.dto.UserLoginDTO;
 import by.itacademy.userservice.core.dto.UserRegistrationDTO;
+import by.itacademy.userservice.core.dto.VerificationDTO;
 import by.itacademy.userservice.core.enums.UserStatus;
+import by.itacademy.userservice.core.mappers.UserMapper;
 import by.itacademy.userservice.dao.entity.UserEntity;
-import by.itacademy.userservice.dao.entity.VerificationEntity;
 import by.itacademy.userservice.endponts.utils.JwtTokenHandler;
 import by.itacademy.userservice.service.api.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,16 +21,16 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static by.itacademy.userservice.core.util.Messages.ERROR_VERIFY_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.NOT_VERIFIED_RESPONSE;
+import static by.itacademy.userservice.core.util.Messages.USER_ACTIVATED;
+import static by.itacademy.userservice.core.util.Messages.USER_REGISTERED;
+import static by.itacademy.userservice.core.util.Messages.WRONG_PASSWORD_RESPONSE;
+
 @Service
 @Validated
+@RequiredArgsConstructor
 public class UserAuthenticationService implements IUserAuthenticationService {
-    private static final String ERROR_VERIFY_RESPONSE = "Failed to verify user. Contact support!";
-    private static final String WRONG_PASSWORD_RESPONSE = "Wrong password!";
-    private static final String NOT_VERIFIED_RESPONSE = "The user is not activated. " +
-            "To activate, follow the link sent to the email specified during registration. " +
-            "If you didn't receive a link, please contact your administrator.";
-    private static final String USER_REGISTERED = "User: %s was registered";
-    private static final String USER_ACTIVATED = "User: %s was activated";
     private final IUserService userService;
     private final IVerificationService verificationService;
     private final IEmailService emailService;
@@ -35,64 +38,47 @@ public class UserAuthenticationService implements IUserAuthenticationService {
     private final JwtTokenHandler jwtHandler;
     private final UserHolder holder;
     private final IAuditInteractService auditInteractService;
-
-    public UserAuthenticationService(
-            IUserService userService,
-            IVerificationService verificationService,
-            IEmailService emailService,
-            PasswordEncoder encoder,
-            JwtTokenHandler jwtHandler,
-            UserHolder holder,
-            IAuditInteractService auditInteractService
-    ) {
-        this.userService = userService;
-        this.verificationService = verificationService;
-        this.emailService = emailService;
-        this.encoder = encoder;
-        this.jwtHandler = jwtHandler;
-        this.holder = holder;
-        this.auditInteractService = auditInteractService;
-    }
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
     public void register(UserRegistrationDTO item) {
-        UserEntity userEntity = userService.createWithRegistration(item);
+        UserDTO userDTO = userService.createWithRegistration(item);
 
-        VerificationEntity verificationEntity = verificationService.save(userEntity);
+        VerificationDTO verificationDTO = verificationService.save(userDTO);
 
-        emailService.sendEmail(userEntity, verificationEntity);
+        emailService.sendEmail(userDTO, verificationDTO);
 
-        UserShortDTO userShortDTO = fillUserShortDTO(userEntity);
-        String text = String.format(USER_REGISTERED, userEntity.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        UserShortDTO userShortDTO = userMapper.userDtoToUserShortDto(userDTO);
+        String text = String.format(USER_REGISTERED, userDTO.getMail());
+        auditInteractService.send(userDTO.getUuid(), userShortDTO, text);
     }
 
     @Override
     @Transactional
     public void verify(String code, String mail) {
-        UserEntity userEntity;
-        VerificationEntity verificationEntity;
+        UserDTO userDTO;
+        VerificationDTO verificationDTO;
         try {
-            userEntity = userService.get(mail);
-            verificationEntity = verificationService.get(mail);
+            userDTO = userService.get(mail);
+            verificationDTO = verificationService.get(mail);
         } catch (RuntimeException ex){
             throw new VerificationException(ERROR_VERIFY_RESPONSE, ex);
         }
 
-        if(!verificationEntity.getUuid().equals(UUID.fromString(code))
-                && !userEntity.getStatus().equals(UserStatus.WAITING_ACTIVATION)) {
+        if(!verificationDTO.uuid().equals(UUID.fromString(code))
+                && !userDTO.getStatus().equals(UserStatus.WAITING_ACTIVATION)) {
             throw new VerificationException(ERROR_VERIFY_RESPONSE);
         }
 
-        userService.activate(userEntity);
+        userDTO = userService.activate(userDTO);
 
-        verificationService.delete(verificationEntity.getUuid());
+        verificationService.delete(verificationDTO.uuid());
         verificationService.deleteByDtCreateLessThan(LocalDateTime.now().minusDays(7));
 
-        UserShortDTO userShortDTO = fillUserShortDTO(userEntity);
-        String text = String.format(USER_ACTIVATED, userEntity.getMail());
-        auditInteractService.send(userEntity, userShortDTO, text);
+        UserShortDTO userShortDTO = userMapper.userDtoToUserShortDto(userDTO);
+        String text = String.format(USER_ACTIVATED, userDTO.getMail());
+        auditInteractService.send(userShortDTO, text);
     }
 
     @Override
@@ -107,21 +93,12 @@ public class UserAuthenticationService implements IUserAuthenticationService {
             throw new NotActivatedException(NOT_VERIFIED_RESPONSE);
         }
 
-        return jwtHandler.generateUserAccessToken(fillUserShortDTO(userEntity), userEntity.getMail());
+        return jwtHandler.generateUserAccessToken(userMapper.userEntityToUserShortDto(userEntity), userEntity.getMail());
     }
     @Transactional(readOnly = true)
     @Override
-    public UserEntity getUser() {
+    public UserDTO getUser() {
         return userService.get(holder.getUser().getMail());
-    }
-
-    private UserShortDTO fillUserShortDTO(UserEntity entityEntity) {
-        UserShortDTO userShortDTO = new UserShortDTO();
-        userShortDTO.setUuid(entityEntity.getUuid());
-        userShortDTO.setMail(entityEntity.getMail());
-        userShortDTO.setFio(entityEntity.getFio());
-        userShortDTO.setRole(entityEntity.getRole());
-        return userShortDTO;
     }
 
 }
