@@ -7,9 +7,11 @@ import by.itacademy.sharedresource.core.enums.EssenceType;
 import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
+import by.itacademy.taskservice.core.dto.ProjectDTO;
 import by.itacademy.taskservice.core.enums.ProjectStatus;
 import by.itacademy.taskservice.core.exceptions.FindEntityException;
 import by.itacademy.taskservice.core.exceptions.UndefinedDBEntityException;
+import by.itacademy.taskservice.core.mappers.ProjectMapper;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
 import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import by.itacademy.taskservice.dao.repositories.IProjectsDao;
@@ -45,12 +47,13 @@ public class ProjectService implements IProjectService {
     private final IUserInteractService userInteractService;
     private final IUserHolder holder;
     private final IAuditInteractService auditInteractService;
+    private final ProjectMapper projectMapper;
     @Transactional
     @Override
     public void create(ProjectCreateDTO dto) {
         checkUsersUuids(dto);
 
-        ProjectEntity entity = convertDTOToEntity(dto);
+        ProjectEntity entity = projectMapper.projectCreateDTOToProjectEntity(dto);
         saveOfThrow(entity);
 
         UserShortDTO userShortDTO = holder.getUser();
@@ -60,56 +63,60 @@ public class ProjectService implements IProjectService {
     }
     @Transactional(readOnly = true)
     @Override
-    public Page<ProjectEntity> get(PageRequest pageRequest, boolean archived) {
+    public Page<ProjectDTO> get(PageRequest pageRequest, boolean archived) {
         UserShortDTO dto = holder.getUser();
         UUID uuid = dto.getUuid();
+        Page<ProjectEntity> projectEntities;
         if(dto.getRole().equals(UserRole.ADMIN)) {
-            return findOrThrowForAdmin(pageRequest, archived);
+            projectEntities = findOrThrowForAdmin(pageRequest, archived);
         } else {
-            return findOrThrowForUser(pageRequest, archived, uuid);
+            projectEntities = findOrThrowForUser(pageRequest, archived, uuid);
         }
+        return projectEntities.map(projectMapper::projectEntityToProjectDTO);
     }
     @Transactional(readOnly = true)
     @Override
-    public ProjectEntity get(UUID projectUuid) {
+    public ProjectDTO get(UUID projectUuid) {
         UserShortDTO dto = holder.getUser();
+        ProjectEntity projectEntity;
         if(dto.getRole().equals(UserRole.ADMIN)) {
-            return projectsDao.findById(projectUuid)
+            projectEntity = projectsDao.findById(projectUuid)
                     .orElseThrow(() -> new FindEntityException(PROJECT_NOT_EXIST_RESPONSE));
+            return projectMapper.projectEntityToProjectDTO(projectEntity);
         } else {
-            return projectsDao.findByUuidAndManagerUuidOrUuidAndStaffUuid(
+            projectEntity = projectsDao.findByUuidAndManagerUuidOrUuidAndStaffUuid(
                             projectUuid, dto.getUuid(),
                             projectUuid, dto.getUuid())
                     .orElseThrow(() -> new FindEntityException(PROJECT_NOT_EXIST_RESPONSE));
         }
+        return projectMapper.projectEntityToProjectDTO(projectEntity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProjectEntity> getByUser(UUID userUuid) {
+    public List<ProjectDTO> getByUser(UUID userUuid) {
         List<ProjectEntity> entities = projectsDao.findByManagerUuidOrStaffUuid(userUuid, userUuid);
         if(entities.isEmpty()) {
             throw new FindEntityException(ERROR_GET_PAGE_BY_USER);
         }
-        return entities;
+        return projectMapper.projectEntitiesToProjectDTOs(entities);
     }
     @Transactional(readOnly = true)
     @Override
-    public List<ProjectEntity> get(List<UUID> projectUuids, UUID user) {
-        return projectsDao.findByUuidInAndManagerUuidOrUuidInAndStaffUuid(
-                projectUuids, user,
-                projectUuids, user);
+    public List<ProjectDTO> get(List<UUID> projectUuids, UUID user) {
+        List<ProjectEntity> projectEntities = projectsDao.findByUuidInAndManagerUuidOrUuidInAndStaffUuid(
+                projectUuids, user, projectUuids, user);
+        return projectMapper.projectEntitiesToProjectDTOs(projectEntities);
     }
 
     @Override
     public boolean ifExist(UUID project, UUID implementer) {
          return projectsDao.existsByUuidAndManagerUuidOrUuidAndStaffUuid(
-                 project, implementer,
-                 project, implementer);
+                 project, implementer, project, implementer);
     }
     @Transactional
     @Override
-    public ProjectEntity update(ProjectCreateDTO dto, CoordinatesDTO coordinates) {
+    public ProjectDTO update(ProjectCreateDTO dto, CoordinatesDTO coordinates) {
         checkUsersUuids(dto);
 
         ProjectEntity entity = projectsDao.findById(coordinates.getUuid())
@@ -121,35 +128,19 @@ public class ProjectService implements IProjectService {
             throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE_PROJECT);
         }
 
-        updateFields(entity, dto);
-
-        saveOfThrow(entity);
+        entity = updateFields(entity, dto);
+        entity = saveOfThrow(entity);
 
         UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(PROJECT_UPDATED, dto.getName());
         auditInteractService.send(userShortDTO, entity.getUuid(),text, EssenceType.PROJECT);
 
-        return entity;
+        return projectMapper.projectEntityToProjectDTO(entity);
     }
 
-    private ProjectEntity convertDTOToEntity(ProjectCreateDTO dto) {
-        List<UserRefEntity> userRefEntities = new ArrayList<>();
-        for (UserRefDTO staff : dto.getStaff()) {
-            userRefEntities.add(new UserRefEntity(staff.getUuid()));
-        }
-        ProjectEntity entity = new ProjectEntity();
-        entity.setUuid(UUID.randomUUID());
-        entity.setName(dto.getName());
-        entity.setDescription(dto.getDescription());
-        entity.setManager(new UserRefEntity(dto.getManager().getUuid()));
-        entity.setStaff(userRefEntities);
-        entity.setStatus(dto.getStatus());
-        return entity;
-    }
-
-    private void saveOfThrow(ProjectEntity entity) {
+    private ProjectEntity saveOfThrow(ProjectEntity entity) {
         try {
-            projectsDao.saveAndFlush(entity);
+            return projectsDao.saveAndFlush(entity);
         } catch (DataAccessException ex) {
             if (ex.getMessage().contains(NAME_UNIQUE_CONSTRAINT)) {
                 throw new DataIntegrityViolationException(PROJECT_EXIST_RESPONSE, ex);
@@ -171,7 +162,7 @@ public class ProjectService implements IProjectService {
     }
 
 
-    private void updateFields(ProjectEntity entity, ProjectCreateDTO dto) {
+    private ProjectEntity updateFields(ProjectEntity entity, ProjectCreateDTO dto) {
         UserRefEntity manager = new UserRefEntity(dto.getManager().getUuid());
 
         List<UUID> uuids = dto.getStaff().stream().map(UserRefDTO::getUuid).toList();
@@ -185,6 +176,7 @@ public class ProjectService implements IProjectService {
         entity.setDescription(dto.getDescription());
         entity.setManager(manager);
         entity.setStatus(dto.getStatus());
+        return entity;
     }
 
     private Page<ProjectEntity> findOrThrowForAdmin(PageRequest pageRequest, boolean archived) {

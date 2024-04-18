@@ -1,14 +1,11 @@
 package by.itacademy.taskservice.endpoints.web;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
-import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.taskservice.core.dto.FilterDTO;
 import by.itacademy.taskservice.core.dto.TaskCreateDTO;
 import by.itacademy.taskservice.core.dto.TaskDTO;
 import by.itacademy.taskservice.core.enums.TaskStatus;
-import by.itacademy.taskservice.dao.entity.TaskEntity;
 import by.itacademy.taskservice.service.api.ITaskService;
-import by.itacademy.taskservice.core.converters.PageConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,6 @@ public class TaskController {
 
     private final ITaskService taskService;
     private final ConversionService conversionService;
-    private final PageConverter pageConverter;
 
     @PostMapping
     public ResponseEntity<?> save(
@@ -43,7 +39,7 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<TaskDTO>> getPages(
+    public ResponseEntity<Page<TaskDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size,
             @RequestParam(required = false) List<UUID> project,
@@ -51,11 +47,8 @@ public class TaskController {
             @RequestParam(required = false) List<TaskStatus> status
     ) {
         FilterDTO filterDTO = new FilterDTO(project, implementer, status);
-        Page<TaskEntity> pageOfTasks =  taskService.get(PageRequest.of(page, size), filterDTO);
-        return new ResponseEntity<>(
-                pageConverter.convertToPageDTO(pageOfTasks, TaskDTO.class),
-                HttpStatus.OK
-        );
+        Page<TaskDTO> pageOfTasks =  taskService.get(PageRequest.of(page, size), filterDTO);
+        return new ResponseEntity<>(pageOfTasks, HttpStatus.OK);
     }
 
     @GetMapping("/{uuid}")
@@ -67,7 +60,7 @@ public class TaskController {
     }
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
-    public ResponseEntity<HttpStatus> update(
+    public ResponseEntity<TaskDTO> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody @Valid TaskCreateDTO taskCreateDTO
@@ -75,8 +68,8 @@ public class TaskController {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
-        taskService.update(taskCreateDTO, coordinatesDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+        TaskDTO taskDTO = taskService.update(taskCreateDTO, coordinatesDTO);
+        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 
     @PatchMapping("/{uuid}/dt_update/{dt_update}/status/{status}")
@@ -87,7 +80,7 @@ public class TaskController {
         CoordinatesDTO coordinates = new CoordinatesDTO();
         coordinates.setUuid(uuid);
         coordinates.setDtUpdate(dtUpdate);
-        taskService.updateStatus(status, coordinates);
-        return new ResponseEntity<>(HttpStatus.OK);
+        TaskDTO taskDTO = taskService.updateStatus(status, coordinates);
+        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 }

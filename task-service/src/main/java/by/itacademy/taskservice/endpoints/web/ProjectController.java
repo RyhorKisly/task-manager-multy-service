@@ -1,12 +1,9 @@
 package by.itacademy.taskservice.endpoints.web;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
-import by.itacademy.sharedresource.core.dto.PageDTO;
 import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
-import by.itacademy.taskservice.dao.entity.ProjectEntity;
 import by.itacademy.taskservice.service.api.IProjectService;
-import by.itacademy.taskservice.core.converters.PageConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +25,6 @@ import java.util.UUID;
 public class ProjectController {
     private final IProjectService projectService;
     private final ConversionService conversionService;
-    private final PageConverter pageConverter;
 
     @PostMapping
     public ResponseEntity<?> save(
@@ -39,16 +35,13 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<PageDTO<ProjectDTO>> getPages(
+    public ResponseEntity<Page<ProjectDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size,
             @RequestParam(required = false, defaultValue = "false") boolean archived
     ) {
-        Page<ProjectEntity> pageOfProjects =  projectService.get(PageRequest.of(page, size), archived);
-        return new ResponseEntity<>(
-                pageConverter.convertToPageDTO(pageOfProjects, ProjectDTO.class),
-                HttpStatus.OK
-        );
+        Page<ProjectDTO> pageOfProjects =  projectService.get(PageRequest.of(page, size), archived);
+        return new ResponseEntity<>(pageOfProjects, HttpStatus.OK);
     }
 
     @GetMapping("/{uuid}")
@@ -60,7 +53,7 @@ public class ProjectController {
     }
 
     @PutMapping("/{uuid}/dt_update/{dt_update}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<Void> update(
             @PathVariable UUID uuid,
             @PathVariable("dt_update") LocalDateTime dtUpdate,
             @RequestBody @Valid ProjectCreateDTO projectCreateDTO

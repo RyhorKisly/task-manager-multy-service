@@ -1,19 +1,21 @@
 package by.itacademy.taskservice.service;
 
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
+import by.itacademy.sharedresource.core.dto.UserRefDTO;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.sharedresource.core.enums.EssenceType;
 import by.itacademy.sharedresource.core.enums.UserRole;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
 import by.itacademy.taskservice.core.dto.FilterDTO;
+import by.itacademy.taskservice.core.dto.ProjectDTO;
 import by.itacademy.taskservice.core.dto.TaskCreateDTO;
+import by.itacademy.taskservice.core.dto.TaskDTO;
 import by.itacademy.taskservice.core.enums.TaskStatus;
 import by.itacademy.taskservice.core.exceptions.FindEntityException;
 import by.itacademy.taskservice.core.exceptions.ForbiddenEntityException;
 import by.itacademy.taskservice.core.exceptions.UndefinedDBEntityException;
-import by.itacademy.taskservice.dao.entity.ProjectEntity;
+import by.itacademy.taskservice.core.mappers.TaskMapper;
 import by.itacademy.taskservice.dao.entity.TaskEntity;
-import by.itacademy.taskservice.dao.entity.UserRefEntity;
 import by.itacademy.taskservice.dao.repositories.ITaskDao;
 import by.itacademy.taskservice.service.api.IAuditInteractService;
 import by.itacademy.taskservice.service.api.IProjectService;
@@ -45,84 +47,87 @@ public class TaskService implements ITaskService {
     private final ITaskDao taskDao;
     private final IAuditInteractService auditInteractService;
     private final IUserHolder holder;
+    private final TaskMapper taskMapper;
 
     @Transactional
     @Override
-    public TaskEntity create(TaskCreateDTO dto) {
+    public TaskDTO create(TaskCreateDTO dto) {
 
         if(!projectService.ifExist(dto.getProject().getUuid(), dto.getImplementer().getUuid())) {
             throw new FindEntityException(REQUEST_ERROR);
         }
 
         TaskEntity entity = convertDTOToEntity(dto);
-        saveOrThrow(entity);
+        entity = saveOrThrow(entity);
 
         String text =  String.format(TASK_CREATED, dto.getTitle());
         auditInteractService.send(entity.getUuid(), text, EssenceType.TASK);
-        return entity;
+        return taskMapper.taskEntityToTaskDTO(entity);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<TaskEntity> get(PageRequest pageRequest, FilterDTO filterDTO) {
+    public Page<TaskDTO> get(PageRequest pageRequest, FilterDTO filterDTO) {
         UserShortDTO userDTO = holder.getUser();
 
+        Page<TaskEntity> taskEntities = null;
         if(userDTO.getRole().equals(UserRole.ADMIN)) {
-            return findPageForAdmin(filterDTO, pageRequest);
+            taskEntities = findPageForAdmin(filterDTO, pageRequest);
         }
         if(userDTO.getRole().equals(UserRole.USER)) {
-            return findPageForUser(userDTO, filterDTO, pageRequest);
+            taskEntities = findPageForUser(userDTO, filterDTO, pageRequest);
         }
-        return null;
+        return Objects.requireNonNull(taskEntities).map(taskMapper::taskEntityToTaskDTO);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public TaskEntity get(UUID taskUuid) {
+    public TaskDTO get(UUID taskUuid) {
         UserShortDTO userDTO = holder.getUser();
-
+        TaskEntity taskEntity;
         if(userDTO.getRole().equals(UserRole.ADMIN)) {
-            return taskDao.findById(taskUuid)
+            taskEntity = taskDao.findById(taskUuid)
                     .orElseThrow(() -> new FindEntityException(TASK_NOT_EXIST_RESPONSE));
         } else {
-            List<ProjectEntity> projectEntities = projectService.getByUser(userDTO.getUuid());
-            List<UUID> projectsUuid = (projectEntities.stream().map(ProjectEntity::getUuid).toList());
-            return taskDao.findByUuidAndProjectIn(taskUuid, projectsUuid)
+            List<ProjectDTO> projectDTOs = projectService.getByUser(userDTO.getUuid());
+            List<UUID> projectsUuid = (projectDTOs.stream().map(ProjectDTO::getUuid).toList());
+            taskEntity = taskDao.findByUuidAndProjectIn(taskUuid, projectsUuid)
                     .orElseThrow(() -> new ForbiddenEntityException(TASK_FORBIDDEN_RESPONSE));
         }
+        return taskMapper.taskEntityToTaskDTO(taskEntity);
     }
 
     @Transactional
     @Override
-    public TaskEntity update(TaskCreateDTO createDTO, CoordinatesDTO coordinates) {
+    public TaskDTO update(TaskCreateDTO createDTO, CoordinatesDTO coordinates) {
         TaskEntity taskEntity = taskDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(TASK_NOT_EXIST_RESPONSE));
 
         checkDtUpdate(taskEntity, coordinates);
-        setFieldsToUpdate(taskEntity, createDTO);
-        saveOrThrow(taskEntity);
+        taskEntity = setFieldsToUpdate(taskEntity, createDTO);
+        taskEntity = saveOrThrow(taskEntity);
 
         UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(TASK_UPDATED, taskEntity.getTitle());
         auditInteractService.send(userShortDTO, taskEntity.getUuid(),text, EssenceType.PROJECT);
 
-        return taskEntity;
+        return taskMapper.taskEntityToTaskDTO(taskEntity);
     }
     @Transactional
     @Override
-    public TaskEntity updateStatus(TaskStatus status, CoordinatesDTO coordinates) {
+    public TaskDTO updateStatus(TaskStatus status, CoordinatesDTO coordinates) {
         TaskEntity taskEntity = taskDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(TASK_NOT_EXIST_RESPONSE));
 
         checkDtUpdate(taskEntity, coordinates);
         taskEntity.setStatus(status);
-        saveOrThrow(taskEntity);
+        taskEntity = saveOrThrow(taskEntity);
 
         UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(TASK_UPDATED, taskEntity.getTitle());
         auditInteractService.send(userShortDTO, taskEntity.getUuid(),text, EssenceType.PROJECT);
 
-        return taskEntity;
+        return taskMapper.taskEntityToTaskDTO(taskEntity);
     }
 
     private TaskEntity convertDTOToEntity(TaskCreateDTO dto) {
@@ -173,10 +178,10 @@ public class TaskService implements ITaskService {
     }
 
     private Page<TaskEntity> findPageForUser(UserShortDTO userDto, FilterDTO filterDTO, PageRequest pageRequest) {
-        List<ProjectEntity> projectEntities = getFilteredProjects(userDto, filterDTO);
+        List<ProjectDTO> projectDTOs = getFilteredProjects(userDto, filterDTO);
 
         if((filterDTO.getImplementers() == null)) {
-            filterDTO.setImplementers(getImplementersFromAcceptedProjects(projectEntities, filterDTO));
+            filterDTO.setImplementers(getImplementersFromAcceptedProjects(projectDTOs, filterDTO));
         }
 
         if (filterDTO.getStatuses() == null) {
@@ -189,28 +194,28 @@ public class TaskService implements ITaskService {
                 pageRequest
         );
     }
-    private List<ProjectEntity> getFilteredProjects(UserShortDTO userDto, FilterDTO filterDTO) {
-        List<ProjectEntity> projectEntities;
+    private List<ProjectDTO> getFilteredProjects(UserShortDTO userDto, FilterDTO filterDTO) {
+        List<ProjectDTO> projectDTOs;
         if(filterDTO.getProjects() == null) {
-            projectEntities = projectService.getByUser(userDto.getUuid());
-            filterDTO.setProjects(projectEntities.stream().map(ProjectEntity::getUuid).toList());
+            projectDTOs = projectService.getByUser(userDto.getUuid());
+            filterDTO.setProjects(projectDTOs.stream().map(ProjectDTO::getUuid).toList());
         } else {
-            projectEntities = projectService.get(filterDTO.getProjects(), userDto.getUuid());
+            projectDTOs = projectService.get(filterDTO.getProjects(), userDto.getUuid());
             List<UUID> projects = new ArrayList<>();
-            for (ProjectEntity entity : projectEntities) {
-                projects.add(entity.getUuid());
+            for (ProjectDTO dto : projectDTOs) {
+                projects.add(dto.getUuid());
             }
             filterDTO.setProjects(projects);
         }
-        return projectEntities;
+        return projectDTOs;
     }
-    private List<UUID> getImplementersFromAcceptedProjects(List<ProjectEntity> projectEntities, FilterDTO filterDTO) {
+    private List<UUID> getImplementersFromAcceptedProjects(List<ProjectDTO> projectDTOs, FilterDTO filterDTO) {
         Set<UUID> implementers = new HashSet<>();
-        for (ProjectEntity entity : projectEntities) {
-            for (UserRefEntity staff : entity.getStaff()) {
+        for (ProjectDTO dto : projectDTOs) {
+            for (UserRefDTO staff : dto.getStaff()) {
                 implementers.add(staff.getUuid());
             }
-            implementers.add(entity.getManager().getUuid());
+            implementers.add(dto.getManager().getUuid());
         }
         return new ArrayList<>(implementers);
     }
@@ -223,6 +228,7 @@ public class TaskService implements ITaskService {
         entity.setImplementer(dto.getImplementer().getUuid());
         return entity;
     }
+
     private void checkDtUpdate(TaskEntity entity, CoordinatesDTO coordinates) {
         if (!entity.getDtUpdate().withNano(0)
                 .isEqual(coordinates.getDtUpdate().withNano(0))
