@@ -30,14 +30,14 @@ public class EmailService implements IEmailService {
     @Override
     @Async
     public void sendEmail(UserEntity item, VerificationEntity verificationEntity) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(mailProperties.getUsername());
-        mailMessage.setTo(item.getMail());
-        mailMessage.setSubject("Complete Registration!");
-        mailMessage.setText("To confirm your account, please click here : "
-                + appProperties.getUserVerificationPath()
-                + "?code=" + verificationEntity.getUuid() + "&mail=" + item.getMail());
-
-        javaMailSender.send(mailMessage);
+        // SimpleMailMessage mailMessage = new SimpleMailMessage();
+        // mailMessage.setFrom(mailProperties.getUsername());
+        // mailMessage.setTo(item.getMail());
+        // mailMessage.setSubject("Complete Registration!");
+        // mailMessage.setText("To confirm your account, please click here : "
+        //         + appProperties.getUserVerificationPath()
+        //         + "?code=" + verificationEntity.getUuid() + "&mail=" + item.getMail());
+        //
+        // javaMailSender.send(mailMessage);
     }
 }
