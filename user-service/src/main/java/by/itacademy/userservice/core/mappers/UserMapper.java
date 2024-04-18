@@ -8,10 +8,8 @@ import by.itacademy.userservice.core.dto.UserRegistrationDTO;
 import by.itacademy.userservice.core.enums.UserStatus;
 import by.itacademy.userservice.dao.entity.UserEntity;
 import org.mapstruct.Context;
-import org.mapstruct.MapMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;

@@ -5,7 +5,6 @@ import by.itacademy.userservice.core.dto.VerificationDTO;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import by.itacademy.userservice.core.exceptions.UndefinedDBEntityException;
 import by.itacademy.userservice.core.mappers.VerificationMapper;
-import by.itacademy.userservice.dao.entity.UserEntity;
 import by.itacademy.userservice.dao.entity.VerificationEntity;
 import by.itacademy.userservice.dao.repositories.IVerificationDao;
 import by.itacademy.userservice.service.api.IVerificationService;

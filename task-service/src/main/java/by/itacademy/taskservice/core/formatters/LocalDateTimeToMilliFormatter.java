@@ -12,7 +12,7 @@ import java.util.Locale;
 public class LocalDateTimeToMilliFormatter implements Formatter<LocalDateTime> {
     @Override
     @NonNull
-    public LocalDateTime parse(@NonNull String text,@NonNull Locale locale) throws ParseException {
+    public LocalDateTime parse(@NonNull String text,@NonNull Locale locale) {
             long milliseconds = Long.parseLong(text);
             return LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.systemDefault());
     }

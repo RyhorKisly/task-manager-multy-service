@@ -1,8 +1,6 @@
 package by.itacademy.userservice.service.api;
 
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
-import by.itacademy.userservice.core.dto.UserDTO;
-import by.itacademy.userservice.dao.entity.UserEntity;
 
 import java.util.UUID;
 
