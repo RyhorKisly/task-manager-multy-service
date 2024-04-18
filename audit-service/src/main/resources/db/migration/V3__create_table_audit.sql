@@ -1,15 +1,4 @@
-CREATE SCHEMA audits;
-
-CREATE TABLE audits."user"
-(
-    uuid uuid NOT NULL,
-    mail text NOT NULL,
-    fio text NOT NULL,
-    role text NOT NULL,
-    PRIMARY KEY (uuid)
-);
-
-CREATE TABLE audits."audit"
+CREATE TABLE app."audit"
 (
     uuid uuid NOT NULL,
     dt_create timestamp without time zone NOT NULL,
@@ -20,5 +9,5 @@ CREATE TABLE audits."audit"
     PRIMARY KEY (uuid),
     CONSTRAINT audit_uuid_unique UNIQUE (uuid),
     CONSTRAINT audit_user_uuid_fkey FOREIGN KEY (user_uuid)
-        REFERENCES audits.user (uuid)
+        REFERENCES app.user (uuid)
 );

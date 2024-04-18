@@ -1,5 +1,5 @@
 FROM eclipse-temurin:19-jre-focal
-MAINTAINER ITAcademy
+MAINTAINER GrigoriyKislyi
 
 ADD ./target/audit-service.jar /app/
 

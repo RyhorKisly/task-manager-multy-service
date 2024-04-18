@@ -5,13 +5,16 @@ spring:
     database: POSTGRESQL
     show-sql: true
     properties:
-      hibernate.default_schema: audits
+      hibernate.default_schema: app
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://audit-db:5432/audit-service
-    username: root
-    password: root
+    url: jdbc:postgresql://${AUDIT_DB_HOST:localhost}:${DB_POST:5433}/${AUDIT_POSTGRES_DB:audit-service}
+    username: ${AUDIT_POSTGRES_USER:root}
+    password: ${AUDIT_POSTGRES_PASSWORD:root}
+
+  flyway:
+    schemas: ${FLYWAY_SCHEMA:flyway}
 
   jackson:
     property-naming-strategy: SNAKE_CASE
@@ -20,18 +23,24 @@ spring:
     import: confidential.yml
 
 logging:
-  level:
-    org:
-      hibernate:
-        SQL:
-          DEBUG
-        orm:
-          jdbc:
-            bind:
-              Trace
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rolling-policy:
+      max-file-size: 1MB
+      file-name-pattern: logs/${spring.application.name}.%d{yyyy.MM.dd}.%i.log
+      max-history: 7
+#  level:
+#    web: DEBUG
+#    org:
+#      hibernate:
+#        sql: DEBUG
+#        orm.jdbc.bind: TRACE
 
 server:
-  port: 8080
+  port: ${SERVICE_PORT:8081}
 
 app:
-  user-url: http://user-service:8080/users
+  user-url: ${USER_SERVICE_URL:http://localhost:8080/users}
