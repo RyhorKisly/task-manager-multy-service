@@ -4,6 +4,7 @@ import by.itacademy.auditservice.core.exceptions.FindEntityException;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.auditservice.dao.repositories.IAuditDao;
 import by.itacademy.auditservice.service.api.IAuditService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,14 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 @Service
+@RequiredArgsConstructor
 public class AuditService implements IAuditService {
     private static final String ERROR_GET_RESPONSE = "Failed to get audit. Try again or contact support!";
     private static final String USER_NOT_EXIST_RESPONSE = "Audit with this id does not exist!";
     private final IAuditDao IAuditDao;
-
-    public AuditService(IAuditDao IAuditDao) {
-        this.IAuditDao = IAuditDao;
-    }
 
     @Override
     @Transactional(readOnly = true)

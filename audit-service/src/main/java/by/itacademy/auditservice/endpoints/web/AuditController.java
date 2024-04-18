@@ -5,6 +5,7 @@ import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.auditservice.service.api.IAuditService;
 import by.itacademy.sharedresource.core.dto.PageDTO;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,19 +18,11 @@ import java.util.UUID;
 
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/audit")
 public class AuditController {
     private final IAuditService auditService;
     private final ConversionService conversionService;
-
-
-    public AuditController(
-            IAuditService auditService,
-            ConversionService conversionService
-    ) {
-        this.auditService = auditService;
-        this.conversionService = conversionService;
-    }
 
     @GetMapping
     public ResponseEntity<?> getPages(

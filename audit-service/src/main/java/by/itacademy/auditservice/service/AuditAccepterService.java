@@ -6,6 +6,7 @@ import by.itacademy.auditservice.dao.entity.UserEntity;
 import by.itacademy.auditservice.dao.repositories.IAuditDao;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
 import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,9 @@ import java.util.UUID;
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class AuditAccepterService implements IAuditAccepterService {
     private final IAuditDao auditDao;
-
-    public AuditAccepterService(IAuditDao auditDao) {
-        this.auditDao = auditDao;
-    }
     @Override
     @Transactional
     public AuditEntity save(AuditCreateDTO auditCreateDTO) {

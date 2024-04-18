@@ -1,6 +1,7 @@
 package by.itacademy.auditservice.dao.repositories;
 
 import by.itacademy.auditservice.dao.entity.AuditEntity;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,9 @@ import java.util.UUID;
 @Repository
 public interface IAuditDao extends JpaRepository<AuditEntity, UUID> {
     @Override
-    Page<AuditEntity> findAll(Pageable pageable);
+    @NonNull
+    Page<AuditEntity> findAll(@NonNull Pageable pageable);
     @Override
-    Optional<AuditEntity> findById(UUID uuid);
+    @NonNull
+    Optional<AuditEntity> findById(@NonNull UUID uuid);
 }

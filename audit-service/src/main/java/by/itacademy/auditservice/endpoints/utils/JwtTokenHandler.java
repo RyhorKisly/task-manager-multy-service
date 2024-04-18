@@ -4,24 +4,18 @@ import by.itacademy.auditservice.config.properites.JWTProperty;
 import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenHandler {
 
     private final JWTProperty property;
     private final ObjectMapper objectMapper;
-
-    public JwtTokenHandler(
-            JWTProperty property,
-            ObjectMapper objectMapper
-    ) {
-        this.property = property;
-        this.objectMapper = objectMapper;
-    }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
