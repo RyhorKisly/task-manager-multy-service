@@ -20,7 +20,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(target = "uuid", expression = "java(setUUID())")
+    @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "password", expression = "java(encodePassword(userCreateDTO.getPassword(), encoder))")
     @Mapping(target = "mail", source = "mail")
     @Mapping(target = "fio", source = "fio")
@@ -30,7 +30,7 @@ public interface UserMapper {
     @Mapping(target = "dtUpdate", ignore = true)
     UserEntity userCreateDtoToUserEntity(UserCreateDTO userCreateDTO, @Context PasswordEncoder encoder);
 
-    @Mapping(target = "uuid", expression = "java(setUUID())")
+    @Mapping(target = "uuid", ignore = true)
     @Mapping(target = "password", expression = "java(encodePassword(item.getPassword(), encoder))")
     @Mapping(target = "mail", source = "mail")
     @Mapping(target = "fio", source = "fio")
@@ -62,10 +62,6 @@ public interface UserMapper {
     UserDTO userEntityToUserDto(UserEntity userEntity);
 
     List<UserDTO> UserEntitiesToUserDTOs(List<UserEntity> userEntities);
-
-    default UUID setUUID() {
-        return UUID.randomUUID();
-    }
 
     default String encodePassword(String password, PasswordEncoder encoder) {
         return encoder.encode(password);

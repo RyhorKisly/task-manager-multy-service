@@ -19,7 +19,7 @@ public class UserAuthenticationController {
     private final IUserAuthenticationService userAuthenticationService;
 
     @PostMapping("/users/registration")
-    public ResponseEntity<?> register(
+    public ResponseEntity<Void> register(
             @RequestBody @Valid UserRegistrationDTO userRegistrationDTO
             ) {
         userAuthenticationService.register(userRegistrationDTO);
@@ -27,7 +27,7 @@ public class UserAuthenticationController {
     }
 
     @GetMapping("/users/verification")
-    public ResponseEntity<?> verify(
+    public ResponseEntity<Void> verify(
             @RequestParam String code,
             @RequestParam @Email String mail
     ) {
@@ -36,7 +36,7 @@ public class UserAuthenticationController {
     }
 
     @PostMapping("/users/login")
-    public ResponseEntity<?> authorize(
+    public ResponseEntity<Void> authorize(
             @RequestBody @Valid UserLoginDTO userLoginDTO
     ) {
         return ResponseEntity.ok()
