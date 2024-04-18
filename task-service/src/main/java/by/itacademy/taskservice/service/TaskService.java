@@ -19,6 +19,7 @@ import by.itacademy.taskservice.service.api.IAuditInteractService;
 import by.itacademy.taskservice.service.api.IProjectService;
 import by.itacademy.taskservice.service.api.ITaskService;
 import by.itacademy.taskservice.service.api.IUserHolder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -28,33 +29,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Service
-public class TaskService implements ITaskService {
-    private static final String REQUEST_ERROR = "Wrong dates. Problem in Project or(and) implementer. Try again or contact support!";
-    private static final String TITLE_UNIQUE_CONSTRAINT = "tasks_title_unique";
-    private static final String TASK_EXIST_RESPONSE = "Task with this title exists";
-    private static final String TASK_CREATED = "Task: \"%s\" was created";
-    private static final String TASK_UPDATED = "Task: \"%s\" was updated";
-    private static final String TASK_NOT_EXIST_RESPONSE = "Task with this id does not exist!";
-    private static final String TASK_FORBIDDEN_RESPONSE = "You do not have access to this task!";
-    private static final String ERROR_UPDATE_RESPONSE = "Failed to update task. Wrong coordinates!";
+import static by.itacademy.taskservice.core.util.Messages.ERROR_UPDATE_RESPONSE_TASK;
+import static by.itacademy.taskservice.core.util.Messages.REQUEST_ERROR;
+import static by.itacademy.taskservice.core.util.Messages.TASK_CREATED;
+import static by.itacademy.taskservice.core.util.Messages.TASK_EXIST_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.TASK_FORBIDDEN_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.TASK_NOT_EXIST_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.TASK_UPDATED;
+import static by.itacademy.taskservice.core.util.Messages.TITLE_UNIQUE_CONSTRAINT;
 
+@Service
+@RequiredArgsConstructor
+public class TaskService implements ITaskService {
     private final IProjectService projectService;
     private final ITaskDao taskDao;
     private final IAuditInteractService auditInteractService;
     private final IUserHolder holder;
-
-    public TaskService(
-            IProjectService projectService,
-            ITaskDao taskDao,
-            IAuditInteractService auditInteractService,
-            IUserHolder holder
-    ) {
-        this.projectService = projectService;
-        this.taskDao = taskDao;
-        this.auditInteractService = auditInteractService;
-        this.holder = holder;
-    }
 
     @Transactional
     @Override
@@ -237,7 +227,7 @@ public class TaskService implements ITaskService {
         if (!entity.getDtUpdate().withNano(0)
                 .isEqual(coordinates.getDtUpdate().withNano(0))
         ) {
-            throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE);
+            throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE_TASK);
         }
     }
 }

@@ -12,15 +12,18 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface ITaskDao extends JpaRepository<TaskEntity, UUID> {
+
     Optional<TaskEntity> findByUuidAndProjectIn(
             UUID uuid, List<UUID> projects
     );
+
     Page<TaskEntity> findByProjectInAndStatusInAndImplementerIn(
             List<UUID> projects,
             List<TaskStatus> statuses,
             List<UUID> implementers,
             Pageable pageable
     );
+
     Page<TaskEntity> findByProjectIn(
             List<UUID> projects,
             Pageable pageable

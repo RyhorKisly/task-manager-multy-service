@@ -23,13 +23,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.ArrayList;
 import java.util.List;
 
+import static by.itacademy.taskservice.core.util.Messages.INCORRECT_CHARACTERS;
+import static by.itacademy.taskservice.core.util.Messages.INCORRECT_DATA;
+import static by.itacademy.taskservice.core.util.Messages.SERVER_ERROR;
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
 public class TaskExceptionHandler {
-    private static final String INCORRECT_DATA = "The request contains incorrect data. Change request and try again or contact support!";
-    private static final String INCORRECT_CHARACTERS = "Incorrect characters. Change request and try it again!";
-    private static final String SERVER_ERROR = "Internal server Error. Please, contact support!";
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)

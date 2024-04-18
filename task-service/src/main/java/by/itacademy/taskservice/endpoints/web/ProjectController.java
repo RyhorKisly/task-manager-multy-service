@@ -6,9 +6,10 @@ import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
 import by.itacademy.taskservice.dao.entity.ProjectEntity;
 import by.itacademy.taskservice.service.api.IProjectService;
-import by.itacademy.taskservice.service.utils.PageConverter;
+import by.itacademy.taskservice.core.converters.PageConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,26 +19,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/project")
 public class ProjectController {
     private final IProjectService projectService;
     private final ConversionService conversionService;
     private final PageConverter pageConverter;
-
-    public ProjectController(
-            IProjectService projectService,
-            ConversionService conversionService,
-            PageConverter pageConverter
-    ) {
-        this.projectService = projectService;
-        this.conversionService = conversionService;
-        this.pageConverter = pageConverter;
-    }
 
     @PostMapping
     public ResponseEntity<?> save(

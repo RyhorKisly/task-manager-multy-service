@@ -1,4 +1,4 @@
-package by.itacademy.taskservice.service.utils;
+package by.itacademy.taskservice.core.converters;
 
 import by.itacademy.sharedresource.core.dto.PageDTO;
 import org.springframework.core.convert.ConversionService;

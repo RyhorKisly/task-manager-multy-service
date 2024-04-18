@@ -17,6 +17,7 @@ import by.itacademy.taskservice.service.api.IAuditInteractService;
 import by.itacademy.taskservice.service.api.IProjectService;
 import by.itacademy.taskservice.service.api.IUserHolder;
 import by.itacademy.taskservice.service.api.IUserInteractService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -28,32 +29,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static by.itacademy.taskservice.core.util.Messages.ERROR_GET_PAGE_BY_USER;
+import static by.itacademy.taskservice.core.util.Messages.ERROR_GET_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.ERROR_UPDATE_RESPONSE_PROJECT;
+import static by.itacademy.taskservice.core.util.Messages.NAME_UNIQUE_CONSTRAINT;
+import static by.itacademy.taskservice.core.util.Messages.PROJECT_CREATED;
+import static by.itacademy.taskservice.core.util.Messages.PROJECT_EXIST_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.PROJECT_NOT_EXIST_RESPONSE;
+import static by.itacademy.taskservice.core.util.Messages.PROJECT_UPDATED;
+
 @Service
+@RequiredArgsConstructor
 public class ProjectService implements IProjectService {
-    private static final String PROJECT_EXIST_RESPONSE = "Project with this name exists";
-    private static final String NAME_UNIQUE_CONSTRAINT = "projects_name_unique";
-    private static final String PROJECT_CREATED = "Project: \"%s\" was created";
-    private static final String PROJECT_UPDATED = "Project: \"%s\" was updated";
-    private static final String ERROR_GET_RESPONSE = "Failed to get project(s). Try again or contact support!";
-    private static final String ERROR_GET_PAGE_BY_USER = "This user does not participate any project!";
-    private static final String PROJECT_NOT_EXIST_RESPONSE = "Project with this id does not exist!";
-    private static final String USER_NOT_EXIST_RESPONSE = "User with this id does not exist!";
-    private static final String ERROR_UPDATE_RESPONSE = "Failed to update project. Wrong coordinates!";
     private final IProjectsDao projectsDao;
     private final IUserInteractService userInteractService;
     private final IUserHolder holder;
     private final IAuditInteractService auditInteractService;
-    public ProjectService(
-            IProjectsDao projectsDao,
-            IUserInteractService userInteractService,
-            IUserHolder holder,
-            IAuditInteractService auditInteractService
-    ) {
-        this.projectsDao = projectsDao;
-        this.userInteractService = userInteractService;
-        this.holder = holder;
-        this.auditInteractService = auditInteractService;
-    }
     @Transactional
     @Override
     public void create(ProjectCreateDTO dto) {
@@ -127,7 +118,7 @@ public class ProjectService implements IProjectService {
         if(!entity.getDtUpdate().withNano(0)
                 .isEqual(coordinates.getDtUpdate().withNano(0))
         ) {
-            throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE);
+            throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE_PROJECT);
         }
 
         updateFields(entity, dto);

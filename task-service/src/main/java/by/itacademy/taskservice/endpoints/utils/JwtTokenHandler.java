@@ -4,6 +4,7 @@ import by.itacademy.sharedresource.core.dto.UserShortDTO;
 import by.itacademy.taskservice.config.properites.JWTProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -14,18 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenHandler {
 
     private final JWTProperty property;
     private final ObjectMapper objectMapper;
-
-    public JwtTokenHandler(
-            JWTProperty property,
-            ObjectMapper objectMapper
-    ) {
-        this.property = property;
-        this.objectMapper = objectMapper;
-    }
 
     public String generateUserAccessToken(Map<String, Object> extraClaims, UserDetails user) {
         return generateUserAccessToken(extraClaims, user.getUsername());

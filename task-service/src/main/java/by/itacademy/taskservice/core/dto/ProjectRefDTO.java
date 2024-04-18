@@ -1,22 +1,16 @@
 package by.itacademy.taskservice.core.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProjectRefDTO {
     private UUID uuid;
-
-    public ProjectRefDTO() {
-    }
-
-    public ProjectRefDTO(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
 }

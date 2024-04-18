@@ -8,9 +8,10 @@ import by.itacademy.taskservice.core.dto.TaskDTO;
 import by.itacademy.taskservice.core.enums.TaskStatus;
 import by.itacademy.taskservice.dao.entity.TaskEntity;
 import by.itacademy.taskservice.service.api.ITaskService;
-import by.itacademy.taskservice.service.utils.PageConverter;
+import by.itacademy.taskservice.core.converters.PageConverter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,22 +26,13 @@ import java.util.UUID;
 
 @Validated
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/task")
 public class TaskController {
 
     private final ITaskService taskService;
     private final ConversionService conversionService;
     private final PageConverter pageConverter;
-
-    public TaskController(
-            ITaskService taskService,
-            ConversionService conversionService,
-            PageConverter pageConverter
-    ) {
-        this.taskService = taskService;
-        this.conversionService = conversionService;
-        this.pageConverter = pageConverter;
-    }
 
     @PostMapping
     public ResponseEntity<?> save(

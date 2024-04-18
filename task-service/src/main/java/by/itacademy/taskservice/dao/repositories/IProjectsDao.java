@@ -12,28 +12,31 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface IProjectsDao extends JpaRepository<ProjectEntity, UUID> {
+
     Page<ProjectEntity> findByStatus(ProjectStatus status, Pageable pageable);
+
      boolean existsByUuidAndManagerUuidOrUuidAndStaffUuid(
              UUID project, UUID manager,
              UUID project2, UUID staff);
+
     Optional<ProjectEntity> findByUuidAndManagerUuidOrUuidAndStaffUuid(
             UUID project, UUID manager,
             UUID project2, UUID staff);
+
     List<ProjectEntity> findByUuidInAndManagerUuidOrUuidInAndStaffUuid(
             List<UUID> projects, UUID manager,
             List<UUID> project2, UUID staff);
+
     Page<ProjectEntity> findByManagerUuidOrStaffUuid(
             UUID manager, UUID staff,
             Pageable pageable);
+
     List<ProjectEntity> findByManagerUuidOrStaffUuid(
             UUID manager, UUID staff);
+
     Page<ProjectEntity> findByStatusAndManagerUuidOrStatusOrStaffUuid(
             ProjectStatus status, UUID manager,
             ProjectStatus statusN, UUID staff,
             Pageable pageable
     );
-
-
-
-
 }
