@@ -19,7 +19,7 @@ import lombok.Setter;
 @JsonRootName(value = "audit")
 public class AuditCreateDTO {
     @JsonProperty("user")
-    private UserShortDTO user;
+    private UserShortDTO userShortDTO;
     @NotBlank(message = "Text is mandatory")
     private String text;
     @NotNull(message = "Type is mandatory with UpperCase")
