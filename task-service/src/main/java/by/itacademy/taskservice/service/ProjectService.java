@@ -59,8 +59,8 @@ public class ProjectService implements IProjectService {
         UserShortDTO userShortDTO = holder.getUser();
         String text =  String.format(PROJECT_CREATED, dto.getName());
         auditInteractService.send(userShortDTO, entity.getUuid(), text, EssenceType.PROJECT);
-
     }
+
     @Transactional(readOnly = true)
     @Override
     public Page<ProjectDTO> get(PageRequest pageRequest, boolean archived) {
@@ -74,6 +74,7 @@ public class ProjectService implements IProjectService {
         }
         return projectEntities.map(projectMapper::projectEntityToProjectDTO);
     }
+
     @Transactional(readOnly = true)
     @Override
     public ProjectDTO get(UUID projectUuid) {
@@ -101,6 +102,7 @@ public class ProjectService implements IProjectService {
         }
         return projectMapper.projectEntitiesToProjectDTOs(entities);
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<ProjectDTO> get(List<UUID> projectUuids, UUID user) {
@@ -114,6 +116,7 @@ public class ProjectService implements IProjectService {
          return projectsDao.existsByUuidAndManagerUuidOrUuidAndStaffUuid(
                  project, implementer, project, implementer);
     }
+
     @Transactional
     @Override
     public ProjectDTO update(ProjectCreateDTO dto, CoordinatesDTO coordinates) {
@@ -160,7 +163,6 @@ public class ProjectService implements IProjectService {
         }
         userInteractService.check(uuids);
     }
-
 
     private ProjectEntity updateFields(ProjectEntity entity, ProjectCreateDTO dto) {
         UserRefEntity manager = new UserRefEntity(dto.getManager().getUuid());
