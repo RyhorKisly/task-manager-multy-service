@@ -1,8 +1,9 @@
 package by.itacademy.auditservice.service;
 
+import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.core.exceptions.UndefinedDBEntityException;
+import by.itacademy.auditservice.core.mappers.AuditMapper;
 import by.itacademy.auditservice.dao.entity.AuditEntity;
-import by.itacademy.auditservice.dao.entity.UserEntity;
 import by.itacademy.auditservice.dao.repositories.IAuditDao;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
 import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
@@ -19,30 +20,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuditAccepterService implements IAuditAccepterService {
     private final IAuditDao auditDao;
+    private final AuditMapper auditMapper;
     @Override
     @Transactional
-    public AuditEntity save(AuditCreateDTO auditCreateDTO) {
-        AuditEntity auditEntity = convertDTOToEntity(auditCreateDTO);
+    public AuditDTO save(AuditCreateDTO auditCreateDTO) {
+        AuditEntity auditEntity = auditMapper.auditCreateDTOToAuditEntity(auditCreateDTO);
         try{
-            return auditDao.save(auditEntity);
+            auditEntity = auditDao.save(auditEntity);
+            return auditMapper.auditEntityToAuditDTO(auditEntity);
         } catch (DataAccessException ex) {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }
-    }
-
-    private AuditEntity convertDTOToEntity(AuditCreateDTO item) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUuid(item.getUserShortDTO().getUuid());
-        userEntity.setMail(item.getUserShortDTO().getMail());
-        userEntity.setFio(item.getUserShortDTO().getFio());
-        userEntity.setRole(item.getUserShortDTO().getRole());
-
-        AuditEntity auditEntity = new AuditEntity();
-        auditEntity.setUuid(UUID.randomUUID());
-        auditEntity.setUser(userEntity);
-        auditEntity.setText(item.getText());
-        auditEntity.setType(item.getType());
-        auditEntity.setId(item.getId());
-        return auditEntity;
     }
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,7 +20,10 @@ import java.util.UUID;
 @Entity
 @Table(name = "audit")
 public class AuditEntity {
+
     @Id
+    @GeneratedValue
+    @UuidGenerator
     private UUID uuid;
 
     @CreationTimestamp(source = SourceType.DB)
@@ -31,10 +35,13 @@ public class AuditEntity {
     @JoinColumn(name = "user_uuid", referencedColumnName = "uuid")
     private UserEntity user;
 
+    @Column(name = "text")
     private String text;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private EssenceType type;
 
+    @Column(name = "id")
     private String id;
 }

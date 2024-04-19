@@ -1,5 +1,6 @@
 package by.itacademy.auditservice.endpoints.web;
 
+import by.itacademy.auditservice.core.dto.AuditDTO;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
 import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
 import jakarta.validation.Valid;
@@ -17,10 +18,10 @@ public class AuditAccepterController {
     private final IAuditAccepterService auditAccepterService;
 
     @PostMapping("/audit")
-    public ResponseEntity<?> save(
+    public ResponseEntity<AuditDTO> save(
             @RequestBody @Valid AuditCreateDTO auditCreateDTO
             ) {
-        auditAccepterService.save(auditCreateDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        AuditDTO auditDTO = auditAccepterService.save(auditCreateDTO);
+        return new ResponseEntity<>(auditDTO, HttpStatus.CREATED);
     }
 }

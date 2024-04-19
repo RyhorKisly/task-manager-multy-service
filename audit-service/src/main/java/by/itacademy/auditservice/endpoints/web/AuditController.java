@@ -1,9 +1,7 @@
 package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
-import by.itacademy.auditservice.dao.entity.AuditEntity;
 import by.itacademy.auditservice.service.api.IAuditService;
-import by.itacademy.sharedresource.core.dto.PageDTO;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
@@ -25,20 +23,17 @@ public class AuditController {
     private final ConversionService conversionService;
 
     @GetMapping
-    public ResponseEntity<?> getPages(
+    public ResponseEntity<Page<AuditDTO>> getPages(
             @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
             @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
     ) {
-        Page<AuditEntity> pageOfAudit =  auditService.get(PageRequest.of(page, size));
+        Page<AuditDTO> pageOfAudit =  auditService.get(PageRequest.of(page, size));
 
-        return new ResponseEntity<>(
-                conversionService.convert(pageOfAudit, PageDTO.class),
-                HttpStatus.OK
-        );
+        return new ResponseEntity<>(pageOfAudit, HttpStatus.OK);
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<?> getCard(@PathVariable UUID uuid) {
+    public ResponseEntity<AuditDTO> getCard(@PathVariable UUID uuid) {
         AuditDTO auditDTO = conversionService.convert(auditService.get(uuid), AuditDTO.class);
         return new ResponseEntity<>(auditDTO, HttpStatus.OK);
     }
