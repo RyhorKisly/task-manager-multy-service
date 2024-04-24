@@ -3,7 +3,7 @@ services:
 
   user-db:
     container_name: user-db
-    build: postgresql
+    build: data/postgresql
     image: taskmanager_user_db
     hostname: ${USER_DB_HOST}
     restart: always
@@ -14,13 +14,13 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./postgres-data/user-service:/var/lib/postgresql/data
+      - ./data/postgres-data/user-service:/var/lib/postgresql/data
     networks:
       - taskmanager_ntwrks
 
   task-db:
     container_name: task-db
-    build: postgresql
+    build: data/postgresql
     image: taskmanager_task_db
     hostname: ${TASK_DB_HOST}
     restart: always
@@ -31,13 +31,13 @@ services:
     ports:
       - '5434:5432'
     volumes:
-      - ./postgres-data/task-service:/var/lib/postgresql/data
+      - ./data/postgres-data/task-service:/var/lib/postgresql/data
     networks:
       - taskmanager_ntwrks
 
   audit-db:
     container_name: audit-db
-    build: postgresql
+    build: data/postgresql
     image: taskmanager_audit_db
     hostname: ${AUDIT_DB_HOST}
     restart: always
@@ -48,13 +48,13 @@ services:
     ports:
       - '5433:5432'
     volumes:
-      - ./postgres-data/audit-service:/var/lib/postgresql/data
+      - ./data/postgres-data/audit-service:/var/lib/postgresql/data
     networks:
       - taskmanager_ntwrks
-      
+
   pgadmin:
     container_name: pgadmin
-    build: pgadmin
+    build: data/pgadmin
     image: taskmanager_pgadmin
     restart: always
     environment:
@@ -95,9 +95,33 @@ services:
      networks:
        - taskmanager_ntwrks
 
+  gateway-service:
+    container_name: gateway-service
+    build: gateway-service
+    image: taskmanager_gateway-service
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8083:8080"
+    networks:
+      - taskmanager_ntwrks
+
+  eureka-service:
+    container_name: eureka-service
+    build: eureka-service
+    image: taskmanager_eureka-service
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8761:8761"
+    networks:
+      - taskmanager_ntwrks
+
   swagger-ui:
     container_name: swagger-ui
-    build: swagger-ui
+    build: data/swagger-ui
     image: taskmanager_swagger-ui
     ports:
       - "81:8080"
