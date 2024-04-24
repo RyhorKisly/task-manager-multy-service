@@ -26,7 +26,7 @@ public class AuditAccepterService implements IAuditAccepterService {
     public AuditDTO save(AuditCreateDTO auditCreateDTO) {
         AuditEntity auditEntity = auditMapper.auditCreateDTOToAuditEntity(auditCreateDTO);
         try{
-            auditEntity = auditDao.save(auditEntity);
+            auditEntity = auditDao.saveAndFlush(auditEntity);
             return auditMapper.auditEntityToAuditDTO(auditEntity);
         } catch (DataAccessException ex) {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);

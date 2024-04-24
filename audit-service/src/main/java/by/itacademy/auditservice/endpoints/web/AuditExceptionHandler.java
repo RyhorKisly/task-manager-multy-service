@@ -5,8 +5,12 @@ import by.itacademy.sharedresource.core.enums.ErrorType;
 import by.itacademy.sharedresource.core.errors.ErrorMessage;
 import by.itacademy.sharedresource.core.errors.ErrorResponse;
 import by.itacademy.sharedresource.core.errors.StructuredErrorResponse;
+import by.itacademy.sharedresource.core.exceptions.ServiceCallNotPermittedException;
+import by.itacademy.sharedresource.core.exceptions.ServiceTimeoutException;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +23,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
 
 @RestControllerAdvice
+@Log4j2
 public class AuditExceptionHandler {
     private static final String INCORRECT_DATA = "The request contains incorrect data. Change request and try again or contact support!";
     private static final String INCORRECT_CHARACTERS = "Incorrect characters. Change request and try it again!";
@@ -39,7 +45,7 @@ public class AuditExceptionHandler {
                         violation.getPropertyPath().toString(), violation.getMessage()))
         );
 
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -54,7 +60,7 @@ public class AuditExceptionHandler {
             response.getErrors().add( new ErrorMessage(error.getField(), error.getDefaultMessage()));
         }
 
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -67,7 +73,7 @@ public class AuditExceptionHandler {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage(INCORRECT_DATA);
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -80,7 +86,7 @@ public class AuditExceptionHandler {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage(ex.getMessage());
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -91,9 +97,29 @@ public class AuditExceptionHandler {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage(INCORRECT_CHARACTERS);
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle exceptions working with feign when:
+     * thrown TimeoutException when we wait too long response;
+     * thrown CallNotPermittedException when CircuitBreaker changed to open.
+     * @param ex with our message
+     * @return {@link ResponseEntity} with {@link ErrorResponse}
+     */
+    @ExceptionHandler({
+            ServiceTimeoutException.class,
+            ServiceCallNotPermittedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleInnerError(RuntimeException ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setLogref(ErrorType.ERROR);
+        response.setMessage(ex.getMessage());
+
+        log.error(ex.getMessage(), ex.fillInStackTrace());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -105,7 +131,7 @@ public class AuditExceptionHandler {
                 ErrorType.ERROR,
                 SERVER_ERROR
         );
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

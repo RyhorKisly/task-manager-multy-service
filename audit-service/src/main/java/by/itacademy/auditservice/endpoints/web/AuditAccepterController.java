@@ -20,7 +20,9 @@ public class AuditAccepterController {
     @PostMapping("/audit")
     public ResponseEntity<AuditDTO> save(
             @RequestBody @Valid AuditCreateDTO auditCreateDTO
-            ) {
+            ) throws InterruptedException {
+        Thread.sleep(4000);
+        // throw new RuntimeException();
         AuditDTO auditDTO = auditAccepterService.save(auditCreateDTO);
         return new ResponseEntity<>(auditDTO, HttpStatus.CREATED);
     }

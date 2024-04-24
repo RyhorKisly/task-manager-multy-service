@@ -3,6 +3,7 @@ package by.itacademy.auditservice.dao.entity;
 import by.itacademy.sharedresource.core.enums.EssenceType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,10 +16,10 @@ import java.util.UUID;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "audit")
+@Entity(name = "audit")
 public class AuditEntity {
 
     @Id
