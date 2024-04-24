@@ -23,5 +23,11 @@ public class Messages {
     public static final String NOT_FOUND_SOME_USERS = "There are non-existent users in the query";
     public static final String NOT_ACTIVATED_RESPONSE = "User: %s, is not activated. " +
             "To activate, follow the link sent to the email specified during registration. " +
-            "If you didn't receive a link, please contact your administrator.";
+            "If you didn't receive a link, please contact support.";
+    public static final String SERVER_ERROR = "Internal server Error. Please, contact support!";
+    public static final String INCORRECT_CHARACTERS = "Incorrect characters. Change request and try it again!";
+    public static final String ERROR_MESSAGE_WHEN_TIME_OUT = "The request for an external service is taking too long. " +
+            "Please wait or contact support";
+    public static final String ERROR_MESSAGE_WHEN_CIRCUIT_BREAKER_OPEN = "CircuitBreaker activated. " +
+            "It's in the stage - open. You can't do the same request for about 45 sec.";
 }

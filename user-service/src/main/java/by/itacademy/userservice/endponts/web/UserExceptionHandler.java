@@ -6,9 +6,12 @@ import by.itacademy.sharedresource.core.errors.ErrorResponse;
 import by.itacademy.sharedresource.core.errors.StructuredErrorResponse;
 import by.itacademy.sharedresource.core.exceptions.NotActivatedException;
 import by.itacademy.sharedresource.core.exceptions.NotVerifiedCoordinatesException;
+import by.itacademy.sharedresource.core.exceptions.ServiceCallNotPermittedException;
+import by.itacademy.sharedresource.core.exceptions.ServiceTimeoutException;
 import by.itacademy.sharedresource.core.exceptions.VerificationException;
 import by.itacademy.userservice.core.exceptions.FindEntityException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +25,16 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
+import static by.itacademy.userservice.core.util.Messages.INCORRECT_CHARACTERS;
+import static by.itacademy.userservice.core.util.Messages.SERVER_ERROR;
 
 @RestControllerAdvice
+@Log4j2
 public class UserExceptionHandler {
 
 //    Если в интерфейсе сервиса проставить @Valid и неверные данные ввести в dto
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> handleInvalidArgument(ConstraintViolationException ex) {
+    public ResponseEntity<StructuredErrorResponse> handleInvalidArgument(ConstraintViolationException ex) {
         StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
         response.setLogref(ErrorType.STRUCTURED_ERROR);
 
@@ -38,14 +43,14 @@ public class UserExceptionHandler {
                         new ErrorMessage(violation.getPropertyPath().toString(), violation.getMessage()))
         );
 
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     //    Если в json неверные данные передать в дто в соответствии с валидацией
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleInvalidArgument(MethodArgumentNotValidException ex) {
+    public ResponseEntity<StructuredErrorResponse> handleInvalidArgument(MethodArgumentNotValidException ex) {
         List<FieldError> errors = ex.getFieldErrors();
         StructuredErrorResponse response = new StructuredErrorResponse(ErrorType.STRUCTURED_ERROR, new ArrayList<>());
 
@@ -53,7 +58,7 @@ public class UserExceptionHandler {
             response.getErrors().add( new ErrorMessage(error.getField(), error.getDefaultMessage()));
         }
 
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -61,11 +66,11 @@ public class UserExceptionHandler {
     @ExceptionHandler({
             HttpMessageConversionException.class
     })
-    public ResponseEntity<?> handleBadRequest(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> handleBadRequest(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage("incorrect.data");
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -78,24 +83,44 @@ public class UserExceptionHandler {
             VerificationException.class,
             NotVerifiedCoordinatesException.class
     })
-    public ResponseEntity<?> handleInvalidArgument(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidArgument(RuntimeException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
         response.setMessage(ex.getMessage());
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // Если передать неверный тип данных в параметры
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
-    public ResponseEntity<?> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidArgument(MethodArgumentTypeMismatchException ex) {
         ErrorResponse response = new ErrorResponse();
         response.setLogref(ErrorType.ERROR);
-        response.setMessage("incorrect.characters");
-        LOGGER.error(ex.getMessage(), ex);
+        response.setMessage(INCORRECT_CHARACTERS);
+        log.error(ex.getMessage(), ex);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handle exceptions working with feign when:
+     * thrown TimeoutException when we wait too long response;
+     * thrown CallNotPermittedException when CircuitBreaker changed to open.
+     * @param ex with our message
+     * @return {@link ResponseEntity} with {@link ErrorResponse}
+     */
+    @ExceptionHandler({
+            ServiceTimeoutException.class,
+            ServiceCallNotPermittedException.class
+    })
+    public ResponseEntity<ErrorResponse> handleInnerError(RuntimeException ex) {
+        ErrorResponse response = new ErrorResponse();
+        response.setLogref(ErrorType.ERROR);
+        response.setMessage(ex.getMessage());
+
+        log.error(ex.getMessage(), ex.fillInStackTrace());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
@@ -105,9 +130,9 @@ public class UserExceptionHandler {
     public ResponseEntity<?> handleInnerError(Exception ex) {
         ErrorResponse response = new ErrorResponse(
                 ErrorType.ERROR,
-                "server.error"
+                SERVER_ERROR
         );
-        LOGGER.error(ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

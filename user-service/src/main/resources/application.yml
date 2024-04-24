@@ -1,7 +1,9 @@
+#Stpring
 spring:
   application:
     name: user-service
 
+#Jpa
   jpa:
     database: POSTGRESQL
     open-in-view: true
@@ -11,29 +13,69 @@ spring:
         default_schema: app
         format_sql: false
 
+#Database
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${USER_DB_HOST:localhost}:${DB_POST:5432}/${USER_POSTGRES_DB:user-service}
     username: ${USER_POSTGRES_USER:root}
     password: ${USER_POSTGRES_PASSWORD:root}
 
+#Liquibase
   liquibase:
     default-schema: ${DEFAULT-SCHEMA:app}
     liquibase-schema: ${LIQUIBASE_SCHEMA:liquibase}
     change-log: db/changelog/changelog.xml
 
+#Jackson
   jackson:
     property-naming-strategy: SNAKE_CASE
 
+#Config
   config:
     import: confidential.yml
 
+#Cloud
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          audit-service:
+            defaultRequestHeaders:
+              X-Checker: check
+            logger-level: full
+#      micrometer:
+#        enabled: true
 
+#Resilience4j
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+        waitDurationInOpenState: 45s              #standard - 60s
+        permittedNumberOfCallsInHalfOpenState: 13 #standard - 10 (количество запросов в режиме half-open)
+        minimumNumberOfCalls: 2                   #standard - 100
+        failureRateThreshold: 35                  #persentage; standard - 50%
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 10s
+
+#Management
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+#Logging
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   file:
-    name: logs/${spring.application.name}.log
+    name: user-service/logs/${spring.application.name}.log
   logback:
     rolling-policy:
       max-file-size: 1MB
@@ -46,9 +88,20 @@ logging:
 #        sql: DEBUG
 #        orm.jdbc.bind: TRACE
 
+#Server
 server:
   port: ${SERVICE_PORT:8080}
 
+#App
 app:
-  user-verification-path: ${USER_VERIFICATION_PATH:http://localhost:8080/users/verification}
-  audit-url: ${AUDIT_SERVICE_URL:http://localhost:8081/audit}
+  user-verification-path: ${USER_VERIFICATION_PATH:http://localhost:api/v1/8080/users/verification}
+
+#Eureka
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761}/eureka
+  instance:
+    preferIpAddress: true
+
+

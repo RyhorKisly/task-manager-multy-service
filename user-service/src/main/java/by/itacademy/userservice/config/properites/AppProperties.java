@@ -9,5 +9,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
     private String userVerificationPath;
-    private String auditUrl;
 }
