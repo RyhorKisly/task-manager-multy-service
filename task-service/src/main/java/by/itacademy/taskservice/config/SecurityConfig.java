@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET,"/task").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers("/task").hasAnyRole("ADMIN")
                                 .requestMatchers("/task/**").hasAnyRole("ADMIN")
+                                .requestMatchers("/actuator/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
