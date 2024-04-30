@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
+                                // TODO В итоге всё равно нужно сделать чтобы ходить можно было только с токеном
+                                .requestMatchers("/users/v3/api-docs").permitAll()
                                 .requestMatchers("/users/registration").permitAll()
                                 .requestMatchers("/users/login").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()

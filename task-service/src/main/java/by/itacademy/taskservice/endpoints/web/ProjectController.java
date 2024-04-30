@@ -3,6 +3,7 @@ package by.itacademy.taskservice.endpoints.web;
 import by.itacademy.sharedresource.core.dto.CoordinatesDTO;
 import by.itacademy.taskservice.core.dto.ProjectCreateDTO;
 import by.itacademy.taskservice.core.dto.ProjectDTO;
+import by.itacademy.taskservice.endpoints.web.api.ProjectControllerApi;
 import by.itacademy.taskservice.service.api.IProjectService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -18,51 +19,37 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/project")
-public class ProjectController {
+public class ProjectController implements ProjectControllerApi {
     private final IProjectService projectService;
     private final ConversionService conversionService;
 
-    @PostMapping
-    public ResponseEntity<?> save(
-            @RequestBody @Valid ProjectCreateDTO projectCreateDTO
-            ) {
+    @Override
+    public ResponseEntity<?> save(ProjectCreateDTO projectCreateDTO) {
         projectService.create(projectCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<Page<ProjectDTO>> getPages(
-            @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
-            @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size,
-            @RequestParam(required = false, defaultValue = "false") boolean archived
-    ) {
+    @Override
+    public ResponseEntity<Page<ProjectDTO>> getPages(Integer page, Integer size, boolean archived) {
         Page<ProjectDTO> pageOfProjects =  projectService.get(PageRequest.of(page, size), archived);
         return new ResponseEntity<>(pageOfProjects, HttpStatus.OK);
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<ProjectDTO> getCard(
-            @PathVariable UUID uuid
-    ) {
+    @Override
+    public ResponseEntity<ProjectDTO> getCard(UUID uuid) {
         ProjectDTO projectDTO = conversionService.convert(projectService.get(uuid), ProjectDTO.class);
         return new ResponseEntity<>(projectDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/{uuid}/dt_update/{dt_update}")
-    public ResponseEntity<Void> update(
-            @PathVariable UUID uuid,
-            @PathVariable("dt_update") LocalDateTime dtUpdate,
-            @RequestBody @Valid ProjectCreateDTO projectCreateDTO
-    ) {
+    @Override
+    public ResponseEntity<Void> update(UUID uuid, LocalDateTime dtUpdate, ProjectCreateDTO projectCreateDTO) {
         CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
         coordinatesDTO.setUuid(uuid);
         coordinatesDTO.setDtUpdate(dtUpdate);
         projectService.update(projectCreateDTO, coordinatesDTO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 }

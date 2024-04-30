@@ -106,7 +106,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public void update(UserCreateDTO item, CoordinatesDTO coordinates) {
+    public UserDTO update(UserCreateDTO item, CoordinatesDTO coordinates) {
 
         UserEntity userEntity = userDao.findById(coordinates.getUuid())
                 .orElseThrow(() -> new FindEntityException(USER_NOT_EXIST_RESPONSE));
@@ -117,10 +117,10 @@ public class UserService implements IUserService {
             throw new NotVerifiedCoordinatesException(ERROR_UPDATE_RESPONSE);
         }
 
-        updateEntityFields(userEntity, item);
+        userEntity = updateEntityFields(userEntity, item);
 
         try {
-            userDao.saveAndFlush(userEntity);
+            userEntity = userDao.saveAndFlush(userEntity);
         } catch (DataAccessException ex) {
             throw new UndefinedDBEntityException(ex.getMessage(), ex);
         }
@@ -128,6 +128,7 @@ public class UserService implements IUserService {
         String text =  String.format(USER_UPDATED, userEntity.getMail());
         UserShortDTO userShortDTO = userMapper.userDtoToUserShortDto(holder.getUser());
         auditInteractService.send(userEntity.getUuid(), userShortDTO, text);
+        return userMapper.userEntityToUserDto(userEntity);
     }
 
     @Override
@@ -152,12 +153,13 @@ public class UserService implements IUserService {
         return userMapper.UserEntitiesToUserDTOs(entities);
     }
 
-    private void updateEntityFields(UserEntity userEntity, UserCreateDTO item) {
+    private UserEntity updateEntityFields(UserEntity userEntity, UserCreateDTO item) {
         userEntity.setMail(item.getMail());
         userEntity.setFio(item.getFio());
         userEntity.setRole(item.getRole());
         userEntity.setStatus(item.getStatus());
         userEntity.setPassword(encoder.encode(item.getPassword()));
+        return userEntity;
     }
 
     private UserEntity checkAndSaveUserEntity(UserEntity userEntity) {

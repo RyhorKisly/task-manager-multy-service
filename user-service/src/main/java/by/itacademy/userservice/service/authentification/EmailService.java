@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailService implements IEmailService {
 
-    private final JavaMailSender javaMailSender;
-    private final MailProperties mailProperties;
-    private final AppProperties appProperties;
+    // private final JavaMailSender javaMailSender;
+    // private final MailProperties mailProperties;
+    // private final AppProperties appProperties;
 
     @Override
     @Async

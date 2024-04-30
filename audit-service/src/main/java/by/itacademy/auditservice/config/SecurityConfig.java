@@ -28,6 +28,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
+                                // TODO В итоге всё равно нужно сделать чтобы ходить можно было только с токеном
+                                .requestMatchers("/audit/v3/api-docs").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/audit").hasAnyRole("SYSTEM")
                                 .requestMatchers("/audit/**").hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/audit").hasAnyRole("ADMIN")

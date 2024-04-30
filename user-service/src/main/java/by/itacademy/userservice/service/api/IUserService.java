@@ -21,7 +21,7 @@ public interface IUserService {
     UserDTO get(UUID uuid);
     UserDTO get(String mail);
     UserEntity get(String mail, UserStatus status);
-    void update(@Valid UserCreateDTO userCreateDTO, CoordinatesDTO coordinatesDTO);
+    UserDTO update(@Valid UserCreateDTO userCreateDTO, CoordinatesDTO coordinatesDTO);
     UserDTO activate(@Valid UserDTO userDTO);
     List<UserDTO> validate(List<UUID> uuids);
 

@@ -1,6 +1,7 @@
 package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
+import by.itacademy.auditservice.endpoints.web.api.AuditAccepterControllerApi;
 import by.itacademy.auditservice.service.api.IAuditAccepterService;
 import by.itacademy.sharedresource.core.dto.AuditCreateDTO;
 import jakarta.validation.Valid;
@@ -14,15 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping()
-public class AuditAccepterController {
+public class AuditAccepterController implements AuditAccepterControllerApi {
     private final IAuditAccepterService auditAccepterService;
 
-    @PostMapping("/audit")
-    public ResponseEntity<AuditDTO> save(
-            @RequestBody @Valid AuditCreateDTO auditCreateDTO
-            ) throws InterruptedException {
-        Thread.sleep(4000);
-        // throw new RuntimeException();
+    @Override
+    public ResponseEntity<AuditDTO> save(AuditCreateDTO auditCreateDTO) {
         AuditDTO auditDTO = auditAccepterService.save(auditCreateDTO);
         return new ResponseEntity<>(auditDTO, HttpStatus.CREATED);
     }

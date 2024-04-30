@@ -33,6 +33,32 @@ spring:
 server:
   port: ${SERVICE_PORT:8083}
 
+#Eureka
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761}/eureka
+  instance:
+    preferIpAddress: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+      - url: /api/v1/audit/v3/api-docs
+        name: Audit Service
+      - url: /api/v1/users/v3/api-docs
+        name: User Service
+      - url: /api/v1/task/v3/api-docs
+        name: Task Service
+
+
 # Debug
 logging:
   level:

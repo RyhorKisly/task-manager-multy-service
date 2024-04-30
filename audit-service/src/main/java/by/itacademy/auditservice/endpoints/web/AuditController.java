@@ -1,6 +1,7 @@
 package by.itacademy.auditservice.endpoints.web;
 
 import by.itacademy.auditservice.core.dto.AuditDTO;
+import by.itacademy.auditservice.endpoints.web.api.AuditControllerApi;
 import by.itacademy.auditservice.service.api.IAuditService;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
@@ -14,26 +15,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Validated
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/audit")
-public class AuditController {
+@RequiredArgsConstructor
+public class AuditController implements AuditControllerApi {
     private final IAuditService auditService;
     private final ConversionService conversionService;
 
-    @GetMapping
-    public ResponseEntity<Page<AuditDTO>> getPages(
-            @RequestParam(required = false, defaultValue = "0") @PositiveOrZero Integer page,
-            @RequestParam(required = false, defaultValue = "20") @PositiveOrZero Integer size
-    ) {
+    @Override
+    public ResponseEntity<Page<AuditDTO>> getPages(Integer page, Integer size) {
         Page<AuditDTO> pageOfAudit =  auditService.get(PageRequest.of(page, size));
-
         return new ResponseEntity<>(pageOfAudit, HttpStatus.OK);
     }
 
-    @GetMapping("/{uuid}")
-    public ResponseEntity<AuditDTO> getCard(@PathVariable UUID uuid) {
+    @Override
+    public ResponseEntity<AuditDTO> getCard(UUID uuid) {
         AuditDTO auditDTO = conversionService.convert(auditService.get(uuid), AuditDTO.class);
         return new ResponseEntity<>(auditDTO, HttpStatus.OK);
     }

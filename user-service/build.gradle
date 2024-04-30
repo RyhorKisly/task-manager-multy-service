@@ -24,6 +24,7 @@ ext {
 	preliquibaseVersion = "1.5.0"
 	sharedResourceVersion = "1.0.0"
 	mapstructVersion = "1.5.5.Final"
+	springdocVersion = "2.5.0"
 }
 
 dependencies {
@@ -36,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
 
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.liquibase:liquibase-core'
