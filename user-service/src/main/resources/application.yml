@@ -75,7 +75,7 @@ logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
   file:
-    name: user-service/logs/${spring.application.name}.log
+    name: logs/user-service/${spring.application.name}.log
   logback:
     rolling-policy:
       max-file-size: 1MB
@@ -87,6 +87,9 @@ logging:
 #      hibernate:
 #        sql: DEBUG
 #        orm.jdbc.bind: TRACE
+#
+#   также можно изменять уровень для отдельных классов или самих папок (вроде для папок тоже актуально) :
+#    by.itacademy.userservice.service.UserService: debug
 
 #Server
 server:
